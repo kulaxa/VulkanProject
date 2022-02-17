@@ -1,0 +1,5 @@
+make -f /home/mario/github/Chess/src/Makefile --dry-run --keep-going --print-directory
+make: Entering directory '/home/mario/github/VulkanTutorial'
+g++ -std=c++17 -O2 -o SnakeTest main.cpp -lglfw -lvulkan -ldl -lpthread -lX11 -lXrandr
+make: Leaving directory '/home/mario/github/VulkanTutorial'
+ 

@@ -7,7 +7,7 @@ VulkanTutorial: *.cpp *.hpp
 .PHONY: test clean
 
 test: VulkanTutorial
-	./VulkanTutorial
+	./compile.sh &&./VulkanTutorial
 
 clean:
 	rm -f VulkanTutorial
