@@ -75,12 +75,7 @@ namespace lve{
         vertexInputInfo.pVertexAttributeDescriptions=attributeDescriptions.data();
         vertexInputInfo.pVertexBindingDescriptions=bindingDescriptions.data();
 
-        VkPipelineViewportStateCreateInfo viewportInfo{};
-        viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
-        viewportInfo.viewportCount = 1;
-        viewportInfo.pViewports = &configInfo.viewport;
-        viewportInfo.scissorCount = 1;
-        viewportInfo.pScissors = &configInfo.scissor;
+
 
         VkGraphicsPipelineCreateInfo pipelineInfo{};
         pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
@@ -88,13 +83,13 @@ namespace lve{
         pipelineInfo.pStages = shaderStages;
         pipelineInfo.pVertexInputState = &vertexInputInfo;
         pipelineInfo.pInputAssemblyState = &configInfo.inputAssemblyInfo;
-        pipelineInfo.pViewportState = &viewportInfo;
+        pipelineInfo.pViewportState = &configInfo.viewportInfo;
         pipelineInfo.pRasterizationState = &configInfo.rasterizationInfo;
         pipelineInfo.pMultisampleState = &configInfo.multisampleInfo;
 
         pipelineInfo.pColorBlendState = &configInfo.colorBlendInfo;
         pipelineInfo.pDepthStencilState = &configInfo.depthStencilInfo;
-        pipelineInfo.pDynamicState = nullptr;
+        pipelineInfo.pDynamicState = &configInfo.dynamicsStateInfo;
 
         pipelineInfo.layout = configInfo.pipelineLayout;
         pipelineInfo.renderPass = configInfo.renderPass;
@@ -127,28 +122,22 @@ namespace lve{
          vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline );
      }
 
-     PipelineConfiguInfo LvePipeline::defaultPipelineConfigInfo(uint32_t width, uint32_t height){
-         PipelineConfiguInfo configInfo{};
+     void LvePipeline::defaultPipelineConfigInfo(PipelineConfiguInfo& configInfo){
+ 
 
          configInfo.inputAssemblyInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
          configInfo.inputAssemblyInfo.topology = VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST; //makes triangles in geometry
          configInfo.inputAssemblyInfo.primitiveRestartEnable = VK_FALSE; //
             //tranfomation between input and image - squashes triangles
             //images are definined with pixels and start from 0,0 and go to ...
-        configInfo.viewport.x = 0.0f;
-        configInfo.viewport.y = 0.0f;
-        configInfo.viewport.width = static_cast<float>(width);
-        configInfo.viewport.height = static_cast<float>(height);
-        configInfo.viewport.minDepth = 0.0f;
-        configInfo.viewport.maxDepth = 1.0f;
 
-        //cuts triangle, what part of screen
-        
-        configInfo.scissor.offset = {0, 0};
-        configInfo.scissor.extent = {width, height};
 
         //combines viewport and scissors in pipelines
-       
+       configInfo.viewportInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
+       configInfo.viewportInfo.viewportCount = 1;
+       configInfo.viewportInfo.pViewports = nullptr;
+       configInfo.viewportInfo.scissorCount =1;
+       configInfo.viewportInfo.pScissors =nullptr;
 
         //rasterization - brakes up geometry to pixels and draws on each pixel our geometry overlaps
          configInfo.rasterizationInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
@@ -206,7 +195,12 @@ namespace lve{
         configInfo.depthStencilInfo.stencilTestEnable = VK_FALSE;
         configInfo.depthStencilInfo.front = {};  // Optional
         configInfo.depthStencilInfo.back = {};   // Optional
-         return configInfo;
+       
+
+       configInfo.dynamicStateEnables = {VK_DYNAMIC_STATE_VIEWPORT, VK_DYNAMIC_STATE_SCISSOR};
+       configInfo.dynamicsStateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
+       configInfo.dynamicsStateInfo.pDynamicStates = configInfo.dynamicStateEnables.data();
+       configInfo.dynamicsStateInfo.dynamicStateCount = static_cast<uint32_t>(configInfo.dynamicStateEnables.size());
      }
 
 }
