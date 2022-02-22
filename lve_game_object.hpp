@@ -8,7 +8,7 @@ namespace lve{
         glm::vec2 translation{};
         glm::vec2 scale{1.f, 1.f};
  
-        bool smjer =false;
+    
         float rotation;
 
         glm::mat2 mat2() {
@@ -26,12 +26,8 @@ namespace lve{
         using id_t = unsigned int;
         glm::vec2 speedVec{0.0f, 0.0f};
         float speed =0.0f;
-       // bool changingDirection =false;
-        int changeCounter =0;
-        int lastHit=id;
-        std::string lastWallHit="null";
-        float radius;
-
+      
+     
 
         static LveGameObject createGameObject(){
             static id_t  currentId =0;
