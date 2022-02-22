@@ -387,10 +387,11 @@ VkSurfaceFormatKHR LveSwapChain::chooseSwapSurfaceFormat(
 VkPresentModeKHR LveSwapChain::chooseSwapPresentMode( // very intense for GPU can comment this 6 lines to only use Vsync
     const std::vector<VkPresentModeKHR> &availablePresentModes) {
   for (const auto &availablePresentMode : availablePresentModes) {
-    if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
-      std::cout << "Present mode: Mailbox" << std::endl;
-      return availablePresentMode;
-    }
+    //uncomment this three lines to enable MAILBOX
+    // if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
+    //   std::cout << "Present mode: Mailbox" << std::endl;
+    //   return availablePresentMode;
+    // }
   }
 
   // for (const auto &availablePresentMode : availablePresentModes) {
