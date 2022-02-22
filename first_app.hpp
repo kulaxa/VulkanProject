@@ -5,7 +5,7 @@
 #include "lve_device.hpp"
 #include "lve_swap_chain.hpp"
 #include "lve_model.hpp"
-
+#include "lve_game_object.hpp"
 #include <memory>
 #include <vector>
 namespace lve{
@@ -21,7 +21,7 @@ namespace lve{
         FirstApp &operator=(const FirstApp &) = delete;
         void run();
         private:
-            void loadModels();
+            void loadGameObjects();
             void createPipelineLayout();
             void createPipeline();
             void createCommandBuffers();
@@ -29,9 +29,10 @@ namespace lve{
             void drawFrame();
             void recreateSwapChain();
             void recordCommandBuffer(int imageIndex);
+            void renderGameObjects(VkCommandBuffer commandBuffer);
             //my code:
             void makeVertices(int num, std::vector<LveModel::Vertex> *vertices);
-             void makeCircle(LveModel::Vertex center, float radius, float angle, std::vector<LveModel::Vertex> *vertices);
+             uint32_t makeCircle(LveModel::Vertex center, float radius, float angle, std::vector<LveModel::Vertex> *vertices);
              void FillVert(LveModel::Vertex center, float size, std::vector<LveModel::Vertex> *vertices, int depth);
            
 
@@ -41,6 +42,6 @@ namespace lve{
             std::unique_ptr<LvePipeline> lvePipeline;
             VkPipelineLayout pipelineLayout;
             std::vector<VkCommandBuffer> commandBuffers;
-            std::unique_ptr<LveModel> lveModel;
+            std::vector<LveGameObject> gameObjects;
     };
 }
