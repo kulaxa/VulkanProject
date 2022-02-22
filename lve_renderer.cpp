@@ -34,15 +34,17 @@ namespace lve{
   if (lveSwapChain == nullptr) {
     lveSwapChain = std::make_unique<LveSwapChain>(lveDevice, extent);
   } else {
-    lveSwapChain = std::make_unique<LveSwapChain>(lveDevice, extent, std::move(lveSwapChain));
-    if(lveSwapChain ->imageCount() != commandBuffers.size()){
-        freeCommandBuffers();
-        createCommandBuffers();
+      std::shared_ptr<LveSwapChain> oldSwapChain = std::move(lveSwapChain);
+    lveSwapChain = std::make_unique<LveSwapChain>(lveDevice, extent, oldSwapChain);
+    if(!oldSwapChain->compareSwapFormats(*lveSwapChain.get())){
+        throw std::runtime_error("Swap chain image(or depth) format has changed"); 
     }
+
+
   }
 }
     void LveRenderer::createCommandBuffers(){
-        commandBuffers.resize(lveSwapChain ->imageCount());
+        commandBuffers.resize(LveSwapChain::MAX_FRAMES_IN_FLIGHT);
 
         VkCommandBufferAllocateInfo allocInfo{};
         allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -68,7 +70,7 @@ namespace lve{
          assert(!isFrameStarted && "Can't call beginFrame while aldready in progress;");
 
         auto result = lveSwapChain ->acquireNextImage(&currentImageIndex);
-
+      
         if(result == VK_ERROR_OUT_OF_DATE_KHR){
             recreateSwapChain();
             return nullptr;
@@ -76,6 +78,7 @@ namespace lve{
         if(result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR){
             throw std::runtime_error("failed to acquire swap chain image!");
         }
+            
 
         isFrameStarted =true;
         auto commandBuffer = getCurrentCommandBuffer();
@@ -98,19 +101,17 @@ namespace lve{
             }
 
             auto result = lveSwapChain->submitCommandBuffers(&commandBuffer, &currentImageIndex);
-
+          
         if(result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || lveWindow.wasWindowResized()){
             lveWindow.resetWindowResizedFlag();
             recreateSwapChain();
-           
-           
         }
-        if(result != VK_SUCCESS){
+
+        else if(result != VK_SUCCESS){
             throw std::runtime_error("failed to present swap chain image!");
         }
-
         isFrameStarted = false;
-
+        currentFrameIndex = (currentFrameIndex +1) % LveSwapChain::MAX_FRAMES_IN_FLIGHT;
         }
        void LveRenderer::beginSwapChainRenderPass(VkCommandBuffer commandBuffer){
            assert(isFrameStarted && "Can't call begin Swap chain Render  pass if frame is not in progress");

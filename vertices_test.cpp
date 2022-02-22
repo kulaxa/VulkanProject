@@ -41,7 +41,7 @@ namespace  lve
         }
     }
 
-    uint32_t FirstApp::makeCircle(LveModel::Vertex center, float radius, float angle, std::vector<LveModel::Vertex> *vertices)
+    void FirstApp::makeCircle(LveModel::Vertex center, float radius, float angle, std::vector<LveModel::Vertex> *vertices)
     {
         // if (radius < 0 || radius > 1)
         //     throw std::runtime_error("Wrong radius");
@@ -89,7 +89,7 @@ namespace  lve
         vertices->push_back({{xc, yc}, colorVec});
         vertices->push_back({{xprev + xc, yprev + yc},colorVec});
         vertices->push_back({{xc + radius, yc},colorVec});
-        return times+1;
+        
     }
 
    

@@ -1,178 +1,189 @@
 #include "first_app.hpp"
-
+#include "simple_render_system.hpp"
+#include "lve_ball_physics.hpp"
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
 
-#include <stdexcept>
-#include <array>
-#include <iostream>
-#include <math.h>
-
 #include <random>
 #include <chrono>
+#include <math.h>
+#include <iostream>
 
-#include <glm/gtc/constants.hpp>
-namespace lve{
+namespace lve
+{
 
-    struct SimplePushConstantData{
-         glm::mat2 transform{1.f};
-    
-        glm::vec2 offset;
-       alignas(16)  glm::vec3 color;
-    };
-
-    FirstApp::FirstApp(){
+    FirstApp::FirstApp()
+    {
         loadGameObjects();
-        createPipelineLayout();
-        createPipeline();
     }
 
-    FirstApp::~FirstApp(){
-        vkDestroyPipelineLayout(lveDevice.device(), pipelineLayout, nullptr);
+    FirstApp::~FirstApp()
+    {
     }
-    void FirstApp::run(){
-        while(!lveWindow.shouldClose()){
-            glfwPollEvents(); //gleda sve user evenete
-           if(auto commandBuffer = lveRenderer.beginFrame()){
-               lveRenderer.beginSwapChainRenderPass(commandBuffer);
-               renderGameObjects(commandBuffer);
-               lveRenderer.endSwapChainRenderPass(commandBuffer);
-               lveRenderer.endFrame();
-           }
-            
+    void FirstApp::run()
+    {
+        SimpleRendererSystem simpleRendererSystem{lveDevice, lveRenderer.getSwapChainRenderPass()};
+        //loadGameObjects();
+    
+        PhysicsSystem ballPhyisicsSystem(gameObjects);
+        while (!lveWindow.shouldClose())
+        {
+            glfwPollEvents(); // gleda sve user evenete
+            if (auto commandBuffer = lveRenderer.beginFrame())
+            {
+
+                // my system update fucntions
+                ballPhyisicsSystem.update();
+                // render system
+                lveRenderer.beginSwapChainRenderPass(commandBuffer);
+                simpleRendererSystem.renderGameObjects(commandBuffer, gameObjects);
+                lveRenderer.endSwapChainRenderPass(commandBuffer);
+                lveRenderer.endFrame();
+            }
         }
 
         vkDeviceWaitIdle(lveDevice.device());
     }
 
-
-
-  
-    void FirstApp::loadGameObjects(){
-        int numOfBalls = 40;
-        std::vector<LveModel::Vertex> vertices{
-            {{0.0f, -0.5f},{1.0f, 0.0f, 0.0f}},
-            {{0.5f, 0.5f},{0.0f, 1.0f, 0.0f}},
-            {{-0.5f, 0.5f},{0.0f, 0.0f, 1.0f}}
-           
-        };
-        
-
-        auto lveModel1 = std::make_shared<LveModel>(lveDevice, vertices);
-          
-              
-
-        
-         
-          
-        auto triangle = LveGameObject::createGameObject();
-        triangle.model =lveModel1;
-        triangle.color={.1f, .8f, .1f};
-        triangle.tranform2d.translation.x = .2f;
-        triangle.tranform2d.scale={2.f, 0.5f};
-        triangle.tranform2d.rotation = 0.25f*glm::two_pi<float>();
-          gameObjects.push_back(std::move(triangle));
-
-
-      
-
-      
+     bool checkIfOccupided(float xPos, float yPos, std::vector<glm::vec2>& positions, float radius, float delta){
+            float minDistance = 10.0f;
+            glm::vec2 point;
+            for(auto p: positions){
+               float distance = sqrt(pow(xPos-p.x, 2.0f) + pow(yPos-p.y, 2.0f));
+               if(distance < minDistance){
+                   minDistance = distance;
+                   point.x = p.x;
+                   point.y = p.y;
+               }
+               if(distance < 2*radius +delta){
+                    return true;
+                }
+            }
+            //std::cout << "{" <<xPos << ", "<<yPos<<"}, "<<"{"<<point.x <<", "
+          //  << point.y << "}, distance :"<<minDistance - 2*radius << ", radius: "<<radius<<  std::endl;
+            return false;
     }
 
-    void FirstApp::createPipelineLayout(){
+    void FirstApp::loadBalls(int numOfBalls, float radius, 
+    float delta, float maxSpeed, std::vector<LveModel::Vertex> &vertices){
+        // very random seed
+         srand(time(NULL));
+        std::mt19937_64 rng;
+        uint64_t timeSeed = std::chrono::high_resolution_clock::now().time_since_epoch().count();
+        std::seed_seq ss{uint32_t(timeSeed & 0xffffffff), uint32_t(timeSeed >> 32)};
+        rng.seed(ss);
 
-        VkPushConstantRange pushConstantRange{};
-        pushConstantRange.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
-        pushConstantRange.offset = 0;
-        pushConstantRange.size = sizeof(SimplePushConstantData);
+        std::uniform_real_distribution<double> unif(-1 + radius + delta, 1 - radius - delta);
+        std::uniform_real_distribution<double> unifSpeed(-maxSpeed, maxSpeed);
+        std::uniform_real_distribution<double> unifColor(0, 1);
+        std::vector<glm::vec2> positions;
+       
+        for (int i = 0; i < numOfBalls; i++)
+        {
+       
 
-        VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-        pipelineLayoutInfo.sType =VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        pipelineLayoutInfo.setLayoutCount =0;
-        pipelineLayoutInfo.pSetLayouts = nullptr;
-        pipelineLayoutInfo.pushConstantRangeCount =1;
-        pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
-        if(vkCreatePipelineLayout(lveDevice.device(), &pipelineLayoutInfo, nullptr, &pipelineLayout) !=
-        VK_SUCCESS){
-            throw std::runtime_error("failed to create pipeline layout!");
+            float xSpeed = unifSpeed(rng);
+            float ySpeed = unifSpeed(rng);
+
+            float xPos, yPos;
+            int occuCounter = 0;
+
+            xPos = unif(rng);
+            yPos = unif(rng);
+
+            if (positions.empty())
+            {
+                positions.push_back({xPos, yPos});
+            }
+            else
+            {
+                while (checkIfOccupided(xPos, yPos, positions, radius, delta) && occuCounter <= 10)
+                {
+                    occuCounter++;
+                    xPos = unif(rng);
+                    yPos = unif(rng);
+                }
+                positions.push_back({xPos, yPos});
+            }
+
+            float r = unifColor(rng);
+            float g = unifColor(rng);
+            float b = unifColor(rng);
+            vertices.clear();
+            makeCircle({{0.0f, 0.0f}}, radius, 0.1, &vertices);
+            auto lveModel = std::make_shared<LveModel>(lveDevice, vertices);
+            auto circle = LveGameObject::createGameObject();
+            
+            circle.model = lveModel;
+            circle.color = {r, g, b};
+            circle.speedVec = {xSpeed, ySpeed};
+            circle.tranform2d.translation.x = xPos;
+            circle.tranform2d.translation.y = yPos;
+            circle.tranform2d.scale = {1.0f, WIDTH/HEIGHT};
+            circle.mass = radius;
+            circle.radius = radius;
+
+            if (occuCounter < 10)
+            {
+                gameObjects.push_back(std::move(circle));
+            }
+            else
+            {
+                std::cout << "cant add this object no space " << std::endl;
+            }
         }
     }
-
-    void FirstApp::createPipeline(){
-
-        assert(pipelineLayout != nullptr && "Cannot create pieline before pipeline layout");
-        
-        PipelineConfiguInfo pipelineConfig{};
-       LvePipeline::defaultPipelineConfigInfo(pipelineConfig);
-        pipelineConfig.renderPass = lveRenderer.getSwapChainRenderPass();
-        pipelineConfig.pipelineLayout = pipelineLayout;
-        lvePipeline = std::make_unique<LvePipeline>(
-            lveDevice,
-            "shaders/simple_shader.vert.spv",
-            "shaders/simple_shader.frag.spv",
-            pipelineConfig);
-       
-    }
-
-    
-     
-
-  
-
     
 
-    
+    void FirstApp::loadGameObjects()
+    {
+        //
+        std::vector<LveModel::Vertex> vertices{
 
+        };
+        //     auto lveModel1 = std::make_shared<LveModel>(lveDevice, vertices);
+        //     auto triangle = LveGameObject::createGameObject();
+        //     triangle.model =lveModel1;
+        //     triangle.color={.1f, .8f, .1f};
+        //     triangle.tranform2d.translation.x = .2f;
+        //     triangle.tranform2d.scale={2.f, 0.5f};
+        //     triangle.tranform2d.rotation = 0.25f*glm::two_pi<float>();
+        //       gameObjects.push_back(std::move(triangle));
+        int numOfBalls = 20;
+        float radius = 0.1f;
+        float delta = 0.005f;
+        float maxSpeed = 0.1f;
+        loadBalls(numOfBalls, radius, delta, maxSpeed, vertices);
 
-  
-
-    void FirstApp::renderGameObjects(VkCommandBuffer commandBuffer){
-        lvePipeline ->bind(commandBuffer);
-  
-        
-       static std::vector<int> escaped;
-    
-         for(auto& obj: gameObjects){
-              
-          
-
-        
-                 
+        //   vertices.clear();
+        // makeCircle({{0.0f, 0.0f}}, radius, 0.1, &vertices);
+        //     auto lveModel = std::make_shared<LveModel>(lveDevice, vertices);
+        //     auto circle = LveGameObject::createGameObject();
             
-                
+        //     circle.model = lveModel;
+        //     circle.speedVec = {0.1f, 0};
+        //     circle.tranform2d.translation.x = -0.5f;
+        //     circle.tranform2d.translation.y = 0;
+        //     circle.tranform2d.scale = {1.0f, WIDTH/HEIGHT};
+        //     circle.mass = radius;
+        //     circle.radius = radius;
+        //     gameObjects.push_back(std::move(circle));
+        //           vertices.clear();
+        //        makeCircle({{0.0f, 0.0f}}, radius, 0.1, &vertices);
+        //      lveModel = std::make_shared<LveModel>(lveDevice, vertices);
+        //      circle = LveGameObject::createGameObject();
+            
+        //     circle.model = lveModel;
+        //     circle.speedVec = {0.1f, 0};
+        //     circle.tranform2d.translation.x = 0.5f;
+        //     circle.tranform2d.translation.y = 0;
+        //     circle.tranform2d.scale = {1.0f, WIDTH/HEIGHT};
+        //     circle.mass = radius;
+        //     circle.radius = radius;
+        //     gameObjects.push_back(std::move(circle));
 
         
-
-                    obj.tranform2d.rotation = glm::mod(obj.tranform2d.rotation + 0.01f, glm::two_pi<float>());
-
-                        
-                    SimplePushConstantData push{};
-
-                    // my code
-
-                    push.offset = obj.tranform2d.translation;
-
-                    push.color = obj.color;
-                    push.transform = obj.tranform2d.mat2();
-
-                    // }
-
-                    vkCmdPushConstants(commandBuffer,
-                                       pipelineLayout,
-                                       VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT,
-                                       0,
-                                       sizeof(SimplePushConstantData),
-                                       &push);
-
-                    obj.model->bind(commandBuffer);
-                    obj.model->draw(commandBuffer);
-                }
-         
     }
-  
-
-
-
 }

@@ -2,6 +2,7 @@
 #include "lve_model.hpp"
 #include <memory>
 
+
 namespace lve{
 
     struct Tranform2dComponent{
@@ -25,13 +26,19 @@ namespace lve{
         public:
         using id_t = unsigned int;
         glm::vec2 speedVec{0.0f, 0.0f};
-        float speed =0.0f;
-      
+        float radius{0.5f};
+        float mass;
+        int lastHit;
+        std::string lastWallHit{"null"};
      
 
         static LveGameObject createGameObject(){
             static id_t  currentId =0;
             return LveGameObject{currentId++};
+        }
+
+        float getSpeed(){
+            return sqrt(pow(speedVec.x, 2.0f) + pow(speedVec.y, 2.0f));
         }
 
         LveGameObject (const LveGameObject &) = delete;
@@ -48,5 +55,6 @@ namespace lve{
         LveGameObject(id_t objId) :id{objId}{};
 
         id_t id;
+        
     };
 }
