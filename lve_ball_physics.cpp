@@ -9,7 +9,8 @@ namespace lve
     void PhysicsSystem::update()
     {
         static std::vector<int> escaped;
-
+        calcMinMaxSpeed();
+        //std::cout << "min speed: "<<minSpeed << ", max speed: "<<maxSpeed << std::endl;
         for (auto &obj : gameObjects)
         {
 
@@ -29,8 +30,9 @@ namespace lve
                 }
             }
 
-            obj.tranform2d.translation.x += obj.speedVec.x * obj.getSpeed();
-            obj.tranform2d.translation.y += obj.speedVec.y * obj.getSpeed();
+            obj.tranform2d.translation.x += obj.speedVec.x;
+            obj.tranform2d.translation.y += obj.speedVec.y;
+            //obj.color = getColorFromSpeed(obj);
 
 
             if (obj.tranform2d.translation.x > 1 || obj.tranform2d.translation.x < -1 ||
@@ -63,33 +65,63 @@ namespace lve
         }
     }
 
-    void PhysicsSystem::adjustForWall(LveGameObject &obj){
-           if (obj.tranform2d.translation.x + obj.radius > 1.0f)
-                    {
-                        obj.speedVec.x *= -1.0f;
+    // void PhysicsSystem::adjustForWall(LveGameObject &obj){
+    //        if (obj.tranform2d.translation.x + obj.radius > 1.0f)
+    //                 {
+    //                     obj.speedVec.x *= -1.0f;
 
-                        obj.tranform2d.translation.x += obj.speedVec.x * obj.getSpeed();
-                    }
-                    if (obj.tranform2d.translation.x - obj.radius < -1.0f)
-                    {
-                        obj.speedVec.x *= -1.0f;
+    //                     obj.tranform2d.translation.x += obj.speedVec.x ;
+    //                 }
+    //                 if (obj.tranform2d.translation.x - obj.radius < -1.0f)
+    //                 {
+    //                     obj.speedVec.x *= -1.0f;
 
-                        obj.tranform2d.translation.x += obj.speedVec.x * obj.getSpeed();
-                    }
-                    if (obj.tranform2d.translation.y + obj.radius > 1.0f)
-                    {
-                        obj.speedVec.y *= -1.0f;
+    //                     obj.tranform2d.translation.x += obj.speedVec.x ;
+    //                 }
+    //                 if (obj.tranform2d.translation.y + obj.radius > 1.0f)
+    //                 {
+    //                     obj.speedVec.y *= -1.0f;
 
-                        obj.tranform2d.translation.y += obj.speedVec.y * obj.getSpeed();
-                    }
-                    if (obj.tranform2d.translation.y - obj.radius < -1.0f)
-                    {
-                        obj.speedVec.y *= -1.0f;
+    //                     obj.tranform2d.translation.y += obj.speedVec.y ;
+    //                 }
+    //                 if (obj.tranform2d.translation.y - obj.radius < -1.0f)
+    //                 {
+    //                     obj.speedVec.y *= -1.0f;
 
-                        obj.tranform2d.translation.y += obj.speedVec.y * obj.getSpeed();
-                    }
+    //                     obj.tranform2d.translation.y += obj.speedVec.y ;
+    //                 }
+    // }
+
+    void PhysicsSystem::updateSpeedForWallCollision(LveGameObject& obj, std::string wall){
+        float theta;
+
+        float x1 =obj.speedVec.x;
+       float y1 =obj.speedVec.y;
+     
+       float alpha = atan(y1/x1);
+       checkQuadrant(x1, y1, alpha);
+        if(wall=="rightWall" || wall =="leftWall"){
+          theta= 0;
+        }else if( wall=="upperWall" || wall=="bottomWall"){
+            
+              theta = M_PI /2;
+        }
+        else{
+            throw std::runtime_error("That wall doesn't exist : " +wall);
+        }
+
+
+        //std::cout <<"alpha: "<<alpha<< ", theta: "<< theta <<std::endl;
+        float vx1 = (((obj.getSpeed()* cos(alpha-theta))*(obj.mass-10000.0f) )
+                             / (obj.mass + 10000.0f))* cos(theta) 
+                             + obj.getSpeed()*sin(alpha-theta)*cos(theta+(M_PI/2));
+
+        float vy1 = (((obj.getSpeed()* cos(alpha-theta))*(obj.mass-10000.0f)  )
+                             / (obj.mass + 10000.0f))* sin(theta) 
+                             + obj.getSpeed()*sin(alpha-theta)*sin(theta+(M_PI/2));
+       //  std::cout <<"speed before : {" <<x1<< ", "<<y1<< "}, speed after: {"<<vx1<< ", "<<vy1<<"} \n";
+        obj.speedVec = {vx1, vy1};
     }
-
     
    bool PhysicsSystem::checkIfCollidedWithWall(LveGameObject& object1){
  //problem je ako ide prebrzo i prođe zid i promjeni mu se na jedan frame brzina, ali onda opet sljedeći
@@ -99,50 +131,52 @@ namespace lve
         float posY = object1.tranform2d.translation.y;
    
 
-         float nextPosX = object1.tranform2d.translation.x +object1.speedVec.x * object1.getSpeed() ;
-        float nextPosY = object1.tranform2d.translation.y +object1.speedVec.y * object1.getSpeed() ;
+         float nextPosX = object1.tranform2d.translation.x +object1.speedVec.x ;
+        float nextPosY = object1.tranform2d.translation.y +object1.speedVec.y  ;
 
 
-         
-        if(posX+radius >= 1.0f  || nextPosX+radius >= 1.0f   ) {
+         //posX+radius >= 1.0f  ||
+        if( nextPosX+radius >= 1.0f   ) {
             if(object1.lastWallHit != "rightWall" || object1.lastHit != object1.getId()){
  
             object1.lastWallHit="rightWall";
             object1.lastHit = object1.getId();
-             object1.speedVec.x *= -1.0f;
+             //object1.speedVec.x *= -1.0f;
+            updateSpeedForWallCollision(object1, "rightWall");
+
           
             return true;
             }
-        }
-        else if(posX-radius <= -1.0f ||  nextPosX-radius <= -1.0f){
+        }//posX-radius <= -1.0f
+        else if(   nextPosX-radius <= -1.0f){
             if(object1.lastWallHit != "leftWall" || object1.lastHit != object1.getId()){
 
                 object1.lastWallHit="leftWall";
                 object1.lastHit = object1.getId();
-                object1.speedVec.x *= -1.0f;
-          
+               // object1.speedVec.x *= -1.0f;
+            updateSpeedForWallCollision(object1, "leftWall");
             return true;
             }
         }
-       
-        else if(posY +radius >= 1.0f ||  nextPosY+radius >=1.0f){
+       //posY +radius >= 1.0f || 
+        else if( nextPosY+radius >=1.0f){
             if(object1.lastWallHit != "upperWall"|| object1.lastHit != object1.getId()){
 
             object1.lastWallHit="upperWall";
              object1.lastHit = object1.getId();
-           
-            object1.speedVec.y *= -1.0f;
+            updateSpeedForWallCollision(object1, "upperWall");
+          //  object1.speedVec.y *= -1.0f;
               return true;
               
             }
-        }
-        else if(posY- radius < -1.0f ||  nextPosY-radius <=-1.0f){
+        }//posY- radius < -1.0f ||
+        else if(  nextPosY-radius <=-1.0f){
             if(object1.lastWallHit != "bottomWall"|| object1.lastHit != object1.getId()){
 
             object1.lastWallHit="bottomWall";
              object1.lastHit = object1.getId();
-           
-            object1.speedVec.y *= -1.0f;
+            updateSpeedForWallCollision(object1, "bottomWall");
+           // object1.speedVec.y *= -1.0f;
               return true;
               
             }
@@ -154,13 +188,37 @@ namespace lve
         return false;
    }
 
-   void checkQuadrant(float x, float y, float& angle){
-       if(x <0 || y <0){
-           if(!(x<0 && y<0)){
-               angle = M_PI -angle;
-           }
-       }
+   void PhysicsSystem::checkQuadrant(float x, float y, float& angle){
+    //    if(x <0 || y >0){
+    //        if(!(x<0 && y>0)){
+    //            angle = M_PI -angle;
+    //        }
+    //    }
+
+    if(x <0){
+        angle = M_PI +angle;
+    }
    }
+
+float roundoff(float value, unsigned char prec)
+{
+  float pow_10 = pow(10.0f, (float)prec);
+  return round(value * pow_10) / pow_10;
+}
+
+    float calcAngleOfImpact(std::pair<float,float> obj1, std::pair<float,float> obj2){
+       
+        float x = obj2.first - obj1.first;
+        float y = obj2.second - obj1.second;
+       // std::cout <<"x: "<<x << ", y : "<<y<<"\n";
+        if(fabs(x) < 0.00001f && y >= 0 ){
+            return M_PI/2;
+        }
+        else if(fabs(x) < 0.00001f && y<0){
+            return (3*M_PI)/2;
+        }
+        return atan(y/x);
+    }
 
    void PhysicsSystem::updateVecSpeed(LveGameObject &object1, LveGameObject &object2){
        float x1 =object1.speedVec.x;
@@ -171,13 +229,16 @@ namespace lve
        checkQuadrant(x1, y1, alpha1);
        float alpha2 = atan(y2/x2);
         checkQuadrant(x2, y2, alpha2);
-        std::cout <<"speed angle 1 : "<<alpha1 << "{"<<x1 <<", "<< y1<<"}"<< std::endl;
-        std::cout <<"speed angle 2 : "<<alpha2 << "{"<<x2 <<", "<< y2<<"}"<< std::endl;
-        float mags = (sqrt(pow(x1, 2.0f)+ pow(y1,2.0f))) * sqrt(pow(x2, 2.0f)+ pow(y2,2.0f));
-       float theta = acos((x1*x2 + y1*y2)/ mags);
-      
-        std::cout <<" angle of impact : "<<theta  << std::endl;
+      //  std::cout <<"speed angle 1 : "<<alpha1 << "{"<<x1 <<", "<< y1<<"}"<< std::endl;
+      //  std::cout <<"speed angle 2 : "<<alpha2 << "{"<<x2 <<", "<< y2<<"}"<< std::endl;
+       
+   
+      float theta = calcAngleOfImpact({object1.tranform2d.translation.x,object1.tranform2d.translation.y },
+       {object2.tranform2d.translation.x,object2.tranform2d.translation.y});
+       // std::cout <<" angle of impact : "<<theta  << std::endl;
 
+      //  std::cout <<"object 1 speed "<< object1.getSpeed() << ", object 2 speed "<<object2.getSpeed() <<"\n";
+       // std::cout << "object 1  mass : "<<object1.mass << ", object 2 mass : " << object2.mass << "\n";
        float vx1 = (((object1.getSpeed()* cos(alpha1-theta))*(object1.mass-object2.mass) + 
                                             2*object2.mass*object2.getSpeed()*cos(alpha2-theta))
                              / (object1.mass + object2.mass))* cos(theta) 
@@ -198,12 +259,22 @@ namespace lve
                              / (object2.mass + object1.mass))* sin(theta) 
                              + object2.getSpeed()*sin(alpha2-theta)*sin(theta+(M_PI/2));
 
-       object1.speedVec = {vx1, vy1};
-       object2.speedVec = {vx2, vy2};
-     // glm::vec2 temp = object1.speedVec;
-     // object1.speedVec = object2.speedVec;
-      //object2.speedVec = temp;
+   // object1.speedVec = {roundoff(vx1, 5),roundoff(vy1, 5) };
+    //object2.speedVec = {roundoff(vx2, 5), roundoff(vy2, 5)};
 
+
+    //std::cout << "vec 1: {"<<vx1 << ", "<<vy1<< "} , it would be: {"<<object2.speedVec.x <<", "<<object2.speedVec.y << "}"<< std::endl;
+   //  std::cout << "vec 2: {"<<vx2 << ", "<<vy2<< "}, it would be: {"<<object1.speedVec.x <<", "<<object1.speedVec.y << "}"<< std::endl;
+
+
+     object1.speedVec = {vx1,vy1};
+   object2.speedVec = {vx2, vy2};
+
+    
+//    glm::vec2 temp = object1.speedVec;
+//    object1.speedVec = object2.speedVec;
+//     object2.speedVec = temp;
+        
    }
    bool PhysicsSystem::checkIfCollidedAndUpdate(LveGameObject &object1, LveGameObject &object2){
         static float radius = object1.radius;
@@ -216,24 +287,25 @@ namespace lve
         float distance = sqrt(pow(posX-otherPosX, 2.0f) + pow(posY-otherPosY, 2.0f));
 
 
-        float nextPosX = object1.tranform2d.translation.x +object1.speedVec.x * object1.getSpeed() ;
-        float nextPosY = object1.tranform2d.translation.y +object1.speedVec.y * object1.getSpeed();
+        float nextPosX = object1.tranform2d.translation.x +object1.speedVec.x ;
+        float nextPosY = object1.tranform2d.translation.y +object1.speedVec.y ;
 
-        float otherNextPosX = object2.tranform2d.translation.x +object2.speedVec.x * object2.getSpeed() ;
-        float otherNextPosY = object2.tranform2d.translation.y +object2.speedVec.y * object2.getSpeed();
+        float otherNextPosX = object2.tranform2d.translation.x +object2.speedVec.x  ;
+        float otherNextPosY = object2.tranform2d.translation.y +object2.speedVec.y ;
   
         float distanceNext  = sqrt(pow(nextPosX-otherNextPosX, 2.0f) + pow(nextPosY-otherNextPosY, 2.0f));
 
 
         //if (object1.changeCounter > 0 && object2.changeCounter > 0){
+            //distance <= 2*radius ||
             if(object1.lastHit != object2.getId() || object2.lastHit != object1.getId()){
-            if(distance <= 2*radius || distanceNext <= 2*radius){
+            if( distanceNext <= 2*radius){
     
 
                 object1.lastHit = object2.getId();
                object2.lastHit = object1.getId();
 
-               updateVecSpeed( object1,  object2);
+               updateVecSpeed(object1,object2);
 
             
 
@@ -245,5 +317,39 @@ namespace lve
 
         return false;
    }
+
+
+    glm::vec3 PhysicsSystem::getColorFromSpeed(LveGameObject& obj){
+        glm::vec3 result;
+     
+        
+
+        if(maxSpeed - obj.getSpeed()  < obj.getSpeed() - minSpeed){
+            result.r = (obj.getSpeed() / maxSpeed);
+            result.b = 0.1f;
+        }
+        else{
+                result.r = 0.1f;
+               result.b = (obj.getSpeed() / minSpeed);
+        }
+        
+        return result;
+    }
+
+    void PhysicsSystem::calcMinMaxSpeed(){
+        minSpeed = 100.f;
+        maxSpeed = -1.0f;
+        for(auto& obj: gameObjects){
+           
+            if(obj.getSpeed() > maxSpeed){
+                maxSpeed = obj.getSpeed();
+            }
+            if(obj.getSpeed() < minSpeed){
+                minSpeed = obj.getSpeed();
+            }
+        }
+
+       
+    }
 
    }

@@ -109,8 +109,11 @@ namespace lve
             }
 
             float r = unifColor(rng);
-            float g = unifColor(rng);
-            float b = unifColor(rng);
+           float g = unifColor(rng);
+           float b = unifColor(rng);
+        //    float r = 1.0f;
+        //    float g = 1.0f;
+        //    float b = 1.0f;
             vertices.clear();
             makeCircle({{0.0f, 0.0f}}, radius, 0.1, &vertices);
             auto lveModel = std::make_shared<LveModel>(lveDevice, vertices);
@@ -121,7 +124,7 @@ namespace lve
             circle.speedVec = {xSpeed, ySpeed};
             circle.tranform2d.translation.x = xPos;
             circle.tranform2d.translation.y = yPos;
-            circle.tranform2d.scale = {1.0f, WIDTH/HEIGHT};
+          //  circle.tranform2d.scale = {1.0f, WIDTH/HEIGHT};
             circle.mass = radius;
             circle.radius = radius;
 
@@ -152,10 +155,10 @@ namespace lve
         //     triangle.tranform2d.rotation = 0.25f*glm::two_pi<float>();
         //       gameObjects.push_back(std::move(triangle));
         int numOfBalls = 20;
-        float radius = 0.1f;
+        float radius = 0.07f;
         float delta = 0.005f;
-        float maxSpeed = 0.1f;
-        loadBalls(numOfBalls, radius, delta, maxSpeed, vertices);
+        float maxSpeed = 0.03f;
+         loadBalls(numOfBalls, radius, delta, maxSpeed, vertices);
 
         //   vertices.clear();
         // makeCircle({{0.0f, 0.0f}}, radius, 0.1, &vertices);
@@ -163,26 +166,26 @@ namespace lve
         //     auto circle = LveGameObject::createGameObject();
             
         //     circle.model = lveModel;
-        //     circle.speedVec = {0.1f, 0};
+        //     circle.speedVec = {-0.02f, -0.04f};
         //     circle.tranform2d.translation.x = -0.5f;
         //     circle.tranform2d.translation.y = 0;
         //     circle.tranform2d.scale = {1.0f, WIDTH/HEIGHT};
         //     circle.mass = radius;
         //     circle.radius = radius;
         //     gameObjects.push_back(std::move(circle));
-        //           vertices.clear();
-        //        makeCircle({{0.0f, 0.0f}}, radius, 0.1, &vertices);
-        //      lveModel = std::make_shared<LveModel>(lveDevice, vertices);
-        //      circle = LveGameObject::createGameObject();
+            //       vertices.clear();
+            //    makeCircle({{0.0f, 0.0f}}, radius, 0.1, &vertices);
+            //  lveModel = std::make_shared<LveModel>(lveDevice, vertices);
+            //  circle = LveGameObject::createGameObject();
             
-        //     circle.model = lveModel;
-        //     circle.speedVec = {0.1f, 0};
-        //     circle.tranform2d.translation.x = 0.5f;
-        //     circle.tranform2d.translation.y = 0;
-        //     circle.tranform2d.scale = {1.0f, WIDTH/HEIGHT};
-        //     circle.mass = radius;
-        //     circle.radius = radius;
-        //     gameObjects.push_back(std::move(circle));
+            // circle.model = lveModel;
+            // circle.speedVec = {0.03f, -0.01f};
+            // circle.tranform2d.translation.x = 0.50f;
+            // circle.tranform2d.translation.y = 0.0;
+            // circle.tranform2d.scale = {1.0f, WIDTH/HEIGHT};
+            // circle.mass = radius;
+            // circle.radius = radius;
+            // gameObjects.push_back(std::move(circle));
 
         
     }
