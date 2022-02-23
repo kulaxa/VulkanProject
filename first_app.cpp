@@ -66,7 +66,7 @@ namespace lve
             return false;
     }
 
-    void FirstApp::loadBalls(int numOfBalls, float radius, 
+    void FirstApp::loadBalls(int numOfBalls, float maxRadius, 
     float delta, float maxSpeed, std::vector<LveModel::Vertex> &vertices){
         // very random seed
          srand(time(NULL));
@@ -75,10 +75,11 @@ namespace lve
         std::seed_seq ss{uint32_t(timeSeed & 0xffffffff), uint32_t(timeSeed >> 32)};
         rng.seed(ss);
 
-        std::uniform_real_distribution<double> unif(-1 + radius + delta, 1 - radius - delta);
+        std::uniform_real_distribution<double> unif(-1 + maxRadius + delta, 1 - maxRadius - delta);
         std::uniform_real_distribution<double> unifSpeed(-maxSpeed, maxSpeed);
         std::uniform_real_distribution<double> unifColor(0, 1);
         std::vector<glm::vec2> positions;
+        std::uniform_real_distribution<double> unifRadius(0.3*maxRadius, maxRadius);
        
         for (int i = 0; i < numOfBalls; i++)
         {
@@ -99,7 +100,7 @@ namespace lve
             }
             else
             {
-                while (checkIfOccupided(xPos, yPos, positions, radius, delta) && occuCounter <= 10)
+                while (checkIfOccupided(xPos, yPos, positions, maxRadius, delta) && occuCounter <= 10)
                 {
                     occuCounter++;
                     xPos = unif(rng);
@@ -114,6 +115,8 @@ namespace lve
         //    float r = 1.0f;
         //    float g = 1.0f;
         //    float b = 1.0f;
+            float radius = unifRadius(rng);
+
             vertices.clear();
             makeCircle({{0.0f, 0.0f}}, radius, 0.1, &vertices);
             auto lveModel = std::make_shared<LveModel>(lveDevice, vertices);
@@ -154,11 +157,11 @@ namespace lve
         //     triangle.tranform2d.scale={2.f, 0.5f};
         //     triangle.tranform2d.rotation = 0.25f*glm::two_pi<float>();
         //       gameObjects.push_back(std::move(triangle));
-        int numOfBalls = 20;
-        float radius = 0.07f;
+        int numOfBalls = 15;
+        float maxRadius = 0.2f;
         float delta = 0.005f;
-        float maxSpeed = 0.03f;
-         loadBalls(numOfBalls, radius, delta, maxSpeed, vertices);
+        float maxSpeed = 0.02f;
+         loadBalls(numOfBalls, maxRadius, delta, maxSpeed, vertices);
 
         //   vertices.clear();
         // makeCircle({{0.0f, 0.0f}}, radius, 0.1, &vertices);

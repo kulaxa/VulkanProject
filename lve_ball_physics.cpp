@@ -10,10 +10,11 @@ namespace lve
     {
         static std::vector<int> escaped;
         calcMinMaxSpeed();
+       
         //std::cout << "min speed: "<<minSpeed << ", max speed: "<<maxSpeed << std::endl;
         for (auto &obj : gameObjects)
         {
-
+                
             if (checkIfCollidedWithWall(obj))
             {
 
@@ -32,7 +33,7 @@ namespace lve
 
             obj.tranform2d.translation.x += obj.speedVec.x;
             obj.tranform2d.translation.y += obj.speedVec.y;
-            //obj.color = getColorFromSpeed(obj);
+            obj.color = getColorFromSpeed(obj);
 
 
             if (obj.tranform2d.translation.x > 1 || obj.tranform2d.translation.x < -1 ||
@@ -126,10 +127,10 @@ namespace lve
    bool PhysicsSystem::checkIfCollidedWithWall(LveGameObject& object1){
  //problem je ako ide prebrzo i prođe zid i promjeni mu se na jedan frame brzina, ali onda opet sljedeći
         //frame opet je u zidu i promjeni mu se opet
-        static float radius = object1.radius;
+         float radius = object1.radius;
         float posX = object1.tranform2d.translation.x;
         float posY = object1.tranform2d.translation.y;
-   
+  
 
          float nextPosX = object1.tranform2d.translation.x +object1.speedVec.x ;
         float nextPosY = object1.tranform2d.translation.y +object1.speedVec.y  ;
@@ -277,7 +278,8 @@ float roundoff(float value, unsigned char prec)
         
    }
    bool PhysicsSystem::checkIfCollidedAndUpdate(LveGameObject &object1, LveGameObject &object2){
-        static float radius = object1.radius;
+         float radiusFirst = object1.radius;
+         float radiusSecond = object2.radius;
        
         float posX = object1.tranform2d.translation.x;
         float posY = object1.tranform2d.translation.y;
@@ -299,7 +301,7 @@ float roundoff(float value, unsigned char prec)
         //if (object1.changeCounter > 0 && object2.changeCounter > 0){
             //distance <= 2*radius ||
             if(object1.lastHit != object2.getId() || object2.lastHit != object1.getId()){
-            if( distanceNext <= 2*radius){
+            if( distanceNext <= radiusFirst + radiusSecond){
     
 
                 object1.lastHit = object2.getId();
