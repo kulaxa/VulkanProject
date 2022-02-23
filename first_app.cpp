@@ -2,6 +2,7 @@
 #include "simple_render_system.hpp"
 #include "lve_ball_physics.hpp"
 
+
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 #include <glm/glm.hpp>
@@ -28,9 +29,12 @@ namespace lve
         //loadGameObjects();
     
         PhysicsSystem ballPhyisicsSystem(gameObjects);
+  
+        bool show_demo_window = true;
         while (!lveWindow.shouldClose())
         {
             glfwPollEvents(); // gleda sve user evenete
+
             if (auto commandBuffer = lveRenderer.beginFrame())
             {
 
@@ -158,7 +162,7 @@ namespace lve
         //     triangle.tranform2d.rotation = 0.25f*glm::two_pi<float>();
         //       gameObjects.push_back(std::move(triangle));
         int numOfBalls = 15;
-        float maxRadius = 0.2f;
+        float maxRadius = 0.1f;
         float delta = 0.005f;
         float maxSpeed = 0.02f;
          loadBalls(numOfBalls, maxRadius, delta, maxSpeed, vertices);
