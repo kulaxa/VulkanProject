@@ -26,11 +26,9 @@ namespace lve
     void FirstApp::run()
     {
         SimpleRendererSystem simpleRendererSystem{lveDevice, lveRenderer.getSwapChainRenderPass()};
-        //loadGameObjects();
-    
+
         PhysicsSystem ballPhyisicsSystem(gameObjects);
   
-        bool show_demo_window = true;
         while (!lveWindow.shouldClose())
         {
             glfwPollEvents(); // gleda sve user evenete
