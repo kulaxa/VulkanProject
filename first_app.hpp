@@ -23,7 +23,7 @@ namespace lve{
         void run();
         private:
             void loadGameObjects();
-
+            void init_imgui();
             //my code:
             void makeVertices(int num, std::vector<LveModel::Vertex> *vertices);
              void makeCircle(LveModel::Vertex center, float radius, float angle, std::vector<LveModel::Vertex> *vertices);
