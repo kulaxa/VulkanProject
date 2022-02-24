@@ -49,7 +49,7 @@ namespace lve{
             std::vector<VkVertexInputAttributeDescription> attributeDescriptinos(2);
             attributeDescriptinos[0].binding =0;
             attributeDescriptinos[0].location = 0;
-            attributeDescriptinos[0].format = VK_FORMAT_R32G32_SFLOAT;
+            attributeDescriptinos[0].format = VK_FORMAT_R32G32B32_SFLOAT;
             attributeDescriptinos[0].offset = offsetof(Vertex,position);
 
             attributeDescriptinos[1].binding =0;

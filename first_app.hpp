@@ -27,8 +27,11 @@ namespace lve{
             //my code:
             void makeVertices(int num, std::vector<LveModel::Vertex> *vertices);
              void makeCircle(LveModel::Vertex center, float radius, float angle, std::vector<LveModel::Vertex> *vertices);
+             void makeCircle(LveModel::Vertex center, float radius, float angle, std::vector<LveModel::Vertex> *vertices, glm::vec3 color);
+
              void FillVert(LveModel::Vertex center, float size, std::vector<LveModel::Vertex> *vertices, int depth);
            void loadBalls(int numOfBalls, float radius, float delta, float maxSpeed, std::vector<LveModel::Vertex> &vertices);
+           void makeAlmostSpehere(LveModel::Vertex center, float radius, float angle, std::vector<LveModel::Vertex> *vertices);
 
             LveWindow lveWindow{WIDTH, HEIGHT, "Vulkan tutorial!"};
             LveDevice lveDevice{lveWindow};
