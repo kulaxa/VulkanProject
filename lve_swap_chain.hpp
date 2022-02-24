@@ -32,6 +32,9 @@ class LveSwapChain {
   uint32_t width() { return swapChainExtent.width; }
   uint32_t height() { return swapChainExtent.height; }
 
+   std::vector<VkSemaphore>  getAvailableSemafors(){return imageAvailableSemaphores;}
+  std::vector<VkSemaphore>  getFinishedSemafors() {return renderFinishedSemaphores;}
+
   float extentAspectRatio() {
     return static_cast<float>(swapChainExtent.width) / static_cast<float>(swapChainExtent.height);
   }

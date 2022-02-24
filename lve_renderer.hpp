@@ -19,7 +19,11 @@ namespace lve{
 
         VkRenderPass getSwapChainRenderPass()const{return lveSwapChain ->getRenderPass();}
         bool isFrameInProgress() const{return isFrameStarted;}
-
+        VkFormat getImageFormat(){return lveSwapChain->getSwapChainImageFormat();}
+        int getSpawChainHeight(){return lveSwapChain->height();}
+         int getSpawChainWidth(){return lveSwapChain->width();}
+        std::vector<VkSemaphore> getAvailableImageSemafors(){return lveSwapChain->getAvailableSemafors();}
+         std::vector<VkSemaphore> getFinishedImageSemafors(){return lveSwapChain->getFinishedSemafors();}
         VkCommandBuffer getCurrentCommandBuffer()const{
             assert(isFrameStarted && "Cannot get command buffer when frame not in progress");
             return commandBuffers[currentFrameIndex];
