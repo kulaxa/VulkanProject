@@ -37,8 +37,8 @@ namespace lve{
        void beginSwapChainRenderPass(VkCommandBuffer commandBuffer);
          void endSwapChainRenderPass(VkCommandBuffer commandBuffer);
 
-        std::unique_ptr<LveSwapChain> getSwapChain(){return std::move(lveSwapChain);}
-
+        //std::unique_ptr<LveSwapChain> getSwapChain(){return std::move(lveSwapChain);}
+        size_t getImageCount(){return lveSwapChain -> imageCount();}
         private:
             
         
