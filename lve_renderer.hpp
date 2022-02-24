@@ -17,7 +17,7 @@ namespace lve{
         LveRenderer(const LveRenderer&) = delete;
         LveRenderer &operator=(const LveRenderer &) = delete;
 
-        VkRenderPass getSwapChainRenderPass() const {return lveSwapChain ->getRenderPass();}
+        VkRenderPass getSwapChainRenderPass()const{return lveSwapChain ->getRenderPass();}
         bool isFrameInProgress() const{return isFrameStarted;}
 
         VkCommandBuffer getCurrentCommandBuffer()const{
