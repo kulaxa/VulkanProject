@@ -24,13 +24,14 @@ class LveSwapChain {
   LveSwapChain& operator=(const LveSwapChain &) = delete;
 
   VkFramebuffer getFrameBuffer(int index) { return swapChainFramebuffers[index]; }
-  VkRenderPass getRenderPass() { return renderPass; }
+  VkRenderPass getRenderPass() { return renderPass; } //render pass
   VkImageView getImageView(int index) { return swapChainImageViews[index]; }
-  size_t imageCount() { return swapChainImages.size(); }
+  size_t imageCount() { return swapChainImages.size(); } //image count
   VkFormat getSwapChainImageFormat() { return swapChainImageFormat; }
   VkExtent2D getSwapChainExtent() { return swapChainExtent; }
   uint32_t width() { return swapChainExtent.width; }
   uint32_t height() { return swapChainExtent.height; }
+  VkSwapchainKHR getSwapChainMYFUNCTION() {return swapChain;}//get swap chain in theory
 
    std::vector<VkSemaphore>  getAvailableSemafors(){return imageAvailableSemaphores;}
   std::vector<VkSemaphore>  getFinishedSemafors() {return renderFinishedSemaphores;}
@@ -78,14 +79,14 @@ class LveSwapChain {
   LveDevice &device;
   VkExtent2D windowExtent;
 
-  VkSwapchainKHR swapChain;
+  VkSwapchainKHR swapChain; //swap chain
   std::shared_ptr<LveSwapChain> oldSwapChain;
 
   std::vector<VkSemaphore> imageAvailableSemaphores;
   std::vector<VkSemaphore> renderFinishedSemaphores;
   std::vector<VkFence> inFlightFences;
   std::vector<VkFence> imagesInFlight;
-  size_t currentFrame = 0;
+  size_t currentFrame = 0; 
 };
 
 }  // namespace lve
