@@ -1,4 +1,5 @@
 // #include "lve_game_object.hpp"
+#pragma once
 
 // namespace lve{
 

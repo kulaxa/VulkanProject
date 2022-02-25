@@ -233,8 +233,8 @@ std::unique_ptr<LveModel> createCubeModel(LveDevice& device, glm::vec3 offset) {
 //   cube.transform.scale = {.5f, .5f, .5f};
   //gameObjects.push_back(std::move(cube));
 
-  // makeCircle({{0.f, 0.f ,0.0f}}, 0.5f, 0.1, &vertices);
-   makeAlmostSpehere({{0.f, 0.f ,-1.f}}, 0.5f, 0.1, &vertices);
+   makeCircle({{0.f, 0.f ,0.0f}}, 0.5f, 0.1, &vertices);
+ //  makeAlmostSpehere({{0.f, 0.f ,-1.f}}, 0.5f, 0.1, &vertices);
    std::shared_ptr<LveModel> lveModelCircle = std::make_unique<LveModel>(lveDevice, vertices);
    auto circle = LveGameObject::createGameObject();
    circle.model = lveModelCircle;

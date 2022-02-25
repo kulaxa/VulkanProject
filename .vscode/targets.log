@@ -1,6 +1,4 @@
 make all -f /home/mario/github/Chess/src/Makefile --print-data-base --no-builtin-variables --no-builtin-rules --question
-make: *** No rule to make target 'all'.  Stop.
- 
 # GNU Make 4.2.1
 # Built for x86_64-pc-linux-gnu
 # Copyright (C) 1988-2016 Free Software Foundation, Inc.
@@ -8,7 +6,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Thu Feb 24 09:21:58 2022
+# Make data base, printed on Fri Feb 25 14:20:50 2022
 
 # Variables
 
@@ -51,7 +49,7 @@ VTE_VERSION = 6003
 # environment
 VSCODE_NLS_CONFIG = {"locale":"en-us","availableLanguages":{},"_languagePackSupport":true}
 # environment
-JOURNAL_STREAM = 8:47394
+JOURNAL_STREAM = 8:42607
 # makefile (from '/home/mario/github/Chess/src/Makefile', line 1)
 CFLAGS = -std=c++17 -O2
 # environment
@@ -79,13 +77,13 @@ DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/1000/bus
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
-MANAGERPID = 1649
+MANAGERPID = 1295
 # environment
 LESSOPEN = | /usr/bin/lesspipe %s
 # environment
 LC_NAME = hr_HR.UTF-8
 # environment
-VSCODE_CWD = /home/mario
+VSCODE_CWD = /home/mario/Dropbox
 # environment
 GSETTINGS_SCHEMA_DIR = /snap/code/88/usr/share/glib-2.0/schemas
 # default
@@ -95,7 +93,7 @@ PATH = /opt/Obsidian:/home/mario/bin:/home/mario/bin:/usr/local/sbin:/usr/local/
 # environment
 GPG_AGENT_INFO = /run/user/1000/gnupg/S.gpg-agent:0:1
 # environment
-SESSION_MANAGER = local/mario-desktop:@/tmp/.ICE-unix/1861,unix/mario-desktop:/tmp/.ICE-unix/1861
+SESSION_MANAGER = local/mario-desktop:@/tmp/.ICE-unix/1502,unix/mario-desktop:/tmp/.ICE-unix/1502
 # environment
 XDG_RUNTIME_DIR = /run/user/1000
 # environment
@@ -113,7 +111,7 @@ DISABLE_WAYLAND = 1
 # environment
 VSCODE_CRASH_REPORTER_START_OPTIONS = {"companyName":"Microsoft","productName":"VSCode","submitURL":"appcenter://code?aid=fba07a4d-84bd-4fc8-a125-9640fc8ce171&uid=d34e7136-35cb-465e-b119-abfb539ceb51&iid=d34e7136-35cb-465e-b119-abfb539ceb51&sid=d34e7136-35cb-465e-b119-abfb539ceb51","uploadToServer":true}
 # environment
-INVOCATION_ID = 4f075b4edcd44207b734ec054b55a229
+INVOCATION_ID = 9cc659c1563346f4a29ab62c392c653c
 # makefile (from '/home/mario/github/Chess/src/Makefile', line 2)
 LDFLAGS = -lglfw -lvulkan -ldl -lpthread -lX11 -lXrandr
 # environment
@@ -139,7 +137,7 @@ PWD = /home/mario/github/VulkanTutorial
 # default
 .LOADED := 
 # environment
-SSH_AGENT_PID = 1826
+SSH_AGENT_PID = 1467
 # environment
 ORIGINAL_XDG_CURRENT_DESKTOP = ubuntu:GNOME
 # environment
@@ -197,7 +195,7 @@ SHLVL = 1
 # environment
 GNOME_SHELL_SESSION_MODE = ubuntu
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-2c97c5bc-3b68-401e-823a-389da5ebbcb7.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-41810df2-556f-4caf-b7cd-77a4c1ef657c.sock
 # default
 MAKE_VERSION := 4.2.1
 # environment
@@ -216,6 +214,8 @@ XDG_CURRENT_DESKTOP = Unity
 LC_TELEPHONE = hr_HR.UTF-8
 # default
 MAKE_COMMAND := make
+# environment
+OLDPWD = /home/mario
 # default
 .VARIABLES := 
 # automatic
@@ -255,11 +255,11 @@ SNAP_NAME = code
 # environment
 LC_ALL = C
 # environment
-GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/02c53521_4c61_4a39_a38c_1bff54f42dbe
+GNOME_TERMINAL_SCREEN = /org/gnome/Terminal/screen/7f2afd60_c201_4d8f_a622_1056a733e612
 # automatic
 ^F = $(notdir $^)
 # environment
-GNOME_TERMINAL_SERVICE = :1.97
+GNOME_TERMINAL_SERVICE = :1.100
 # default
 SUFFIXES := 
 # environment
@@ -274,6 +274,9 @@ WINDOWPATH = 2
 LC_IDENTIFICATION = hr_HR.UTF-8
 # environment
 DERBY_HOME = /usr/lib/jvm/java-17-oracle/db
+ 
+make: *** No rule to make target 'all'.  Stop.
+ 
 # default
 .RECIPEPREFIX := 
 # environment
@@ -283,10 +286,9 @@ LANG = C
 # environment
 TERM = xterm-256color
 # environment
-VSCODE_PID = 2715
- 
+VSCODE_PID = 7557
 # variable set hash-table stats:
-# Load=136/1024=13%, Rehash=0, Collisions=21/161=13%
+# Load=137/1024=13%, Rehash=0, Collisions=21/162=13%
 
 # Pattern-specific Variable Values
 
@@ -371,6 +373,6 @@ clean:
 # strcache performance: lookups = 21 / hit rate = 47%
 # hash-table stats:
 # Load=11/8192=0%, Rehash=0, Collisions=0/21=0%
-# Finished Make data base on Thu Feb 24 09:21:58 2022
+# Finished Make data base on Fri Feb 25 14:20:50 2022
 
  
