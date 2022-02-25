@@ -265,7 +265,8 @@ static void CleanupVulkanWindow()
 {
     ImGui_ImplVulkanH_DestroyWindow(g_Instance, g_Device, &g_MainWindowData, g_Allocator);
 }
-
+namespace lve
+{
 static void FrameRender(ImGui_ImplVulkanH_Window* wd, ImDrawData* draw_data)
 {
     VkResult err;
@@ -275,10 +276,12 @@ static void FrameRender(ImGui_ImplVulkanH_Window* wd, ImDrawData* draw_data)
     err = vkAcquireNextImageKHR(g_Device, wd->Swapchain, UINT64_MAX, image_acquired_semaphore, VK_NULL_HANDLE, &wd->FrameIndex);
     if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
     {
-        g_SwapChainRebuild = true;
-        return;
-    }
+       g_SwapChainRebuild = true;
+       return;
+   }
     check_vk_result(err);
+
+
 
     ImGui_ImplVulkanH_Frame* fd = &wd->Frames[wd->FrameIndex];
     {
@@ -363,75 +366,107 @@ static void glfw_error_callback(int error, const char* description)
 
 
 
-//#######################################################################
-namespace lve
-{
 
     void createImguiRenderpass(VkDevice device, VkRenderPass *imGuiRenderPass, VkFormat imageFormat, VkFormat depthFormat)
     {
-        VkAttachmentDescription attachment = {};
-        attachment.format = imageFormat;
-        attachment.samples = VK_SAMPLE_COUNT_1_BIT;
-        attachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
-        attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-        attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-        attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-        attachment.initialLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;//VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-        attachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+        // VkAttachmentDescription attachment = {};
+        // attachment.format = imageFormat;
+        // attachment.samples = VK_SAMPLE_COUNT_1_BIT;
+        // attachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+        // attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+        // attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        // attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        // attachment.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        // attachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 
-//           VkAttachmentDescription depthAttachment{};
-//   depthAttachment.format = depthFormat;
-//   depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
-//   depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-//   depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-//   depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-//   depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-//   depthAttachment.initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-//   depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+        // VkAttachmentReference color_attachment = {};
+        // color_attachment.attachment = 0;
+        // color_attachment.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
-//   VkAttachmentReference depthAttachmentRef{};
-//   depthAttachmentRef.attachment = 1;
-//   depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+        // VkSubpassDescription subpass = {};
+        // subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+        // subpass.colorAttachmentCount = 1;
+        // subpass.pColorAttachments = &color_attachment;
 
-        VkAttachmentReference color_attachment = {};
-        color_attachment.attachment = 0;
-        color_attachment.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        // VkSubpassDependency dependency = {};
+        // dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+        // dependency.dstSubpass = 0;
+        // dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        // dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        // dependency.srcAccessMask = 0; // or VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        // dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
+        // VkRenderPassCreateInfo info = {};
+        // info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+        // info.attachmentCount = 1;
+        // info.pAttachments = &attachment;
+        // info.subpassCount = 1;
+        // info.pSubpasses = &subpass;
+        // info.dependencyCount = 1;
+        // info.pDependencies = &dependency;
+        // if (vkCreateRenderPass(device, &info, nullptr, imGuiRenderPass) != VK_SUCCESS)
+        // {
+        //     throw std::runtime_error("Could not create Dear ImGui's render pass");
+        // }
+
+        VkAttachmentDescription depthAttachment{};
+        depthAttachment.format = depthFormat;
+        depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+        depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+        VkAttachmentReference depthAttachmentRef{};
+        depthAttachmentRef.attachment = 1;
+        depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+        VkAttachmentDescription colorAttachment = {};
+        colorAttachment.format = imageFormat;
+        colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+        colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+        colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+        colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR; // VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;//
+
+        VkAttachmentReference colorAttachmentRef = {};
+        colorAttachmentRef.attachment = 0;
+        colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
         VkSubpassDescription subpass = {};
         subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
         subpass.colorAttachmentCount = 1;
-        subpass.pColorAttachments = &color_attachment;  
-       // subpass.pDepthStencilAttachment = &depthAttachmentRef;
+        subpass.pColorAttachments = &colorAttachmentRef;
+        subpass.pDepthStencilAttachment = &depthAttachmentRef;
 
         VkSubpassDependency dependency = {};
         dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+        dependency.srcAccessMask = 0;
+        dependency.srcStageMask =
+            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
         dependency.dstSubpass = 0;
-        dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-        dependency.srcAccessMask =   VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT; //0
-        dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        dependency.dstStageMask =
+            VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+        dependency.dstAccessMask =
+            VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 
-        VkRenderPassCreateInfo info = {};
-        info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-        info.attachmentCount = 1;
-        info.pAttachments = &attachment;
-        info.subpassCount = 1;
-        info.pSubpasses = &subpass;
-        info.dependencyCount = 1;
-        info.pDependencies = &dependency;
+        std::array<VkAttachmentDescription, 2> attachments = {colorAttachment, depthAttachment};
+        VkRenderPassCreateInfo renderPassInfo = {};
+        renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+        renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+        renderPassInfo.pAttachments = attachments.data();
+        renderPassInfo.subpassCount = 1;
+        renderPassInfo.pSubpasses = &subpass;
+        renderPassInfo.dependencyCount = 1;
+        renderPassInfo.pDependencies = &dependency;
 
-//         std::array<VkAttachmentDescription, 2> attachments = {attachment, depthAttachment};
-//   VkRenderPassCreateInfo info = {};
-//   info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-//   info.attachmentCount = static_cast<uint32_t>(attachments.size());
-//   info.pAttachments = attachments.data();
-//   info.subpassCount = 1;
-//   info.pSubpasses = &subpass;
-//   info.dependencyCount = 1;
-//   info.pDependencies = &dependency;
-        if (vkCreateRenderPass(device, &info, nullptr, imGuiRenderPass) != VK_SUCCESS)
+        if (vkCreateRenderPass(device, &renderPassInfo, nullptr, imGuiRenderPass) != VK_SUCCESS)
         {
-            throw std::runtime_error("Could not create Dear ImGui's render pass");
+            throw std::runtime_error("failed to create render pass!");
         }
     }
 
@@ -520,15 +555,13 @@ namespace lve
 
      wd->ImageCount = lveRenderer.getImageCount();
 
-     
-
    // ImGui_ImplVulkanH_CreateOrResizeWindow(g_Instance, g_PhysicalDevice, g_Device, wd, g_QueueFamily, g_Allocator, w, h, g_MinImageCount);
     //ta fukncija napravi novi swapchiain i commandbuffer
     //postavi na wd->swapChain, wd->renderPass, wd ->ImageCount
 
     VkRenderPass imGuiRenderPass ;
-    createImguiRenderpass(lveDevice.device(), &imGuiRenderPass, lveRenderer.getSwapChain()->getSwapChainImageFormat(), lveRenderer.getSwapChain()->findDepthFormat());
-
+    createImguiRenderpass(lveDevice.device(), &imGuiRenderPass, lveRenderer.getSwapChain()->getSwapChainImageFormat(),lveRenderer.getSwapChain()->findDepthFormat());
+   
       wd->Swapchain = lveRenderer.getSwapChain()->getSwapChainMYFUNCTION();
                 // wd->RenderPass = lveRenderer.getSwapChain() -> getRenderPass();
                  wd->ImageCount = lveRenderer.getSwapChain() -> imageCount();
@@ -643,46 +676,26 @@ namespace lve
             glfwPollEvents(); // gleda sve user evenete
    
 
-            if (auto commandBuffer = lveRenderer.beginFrame())
-            {
+           
 
                 // imgui commands
 
                 // your draw function
 
                 // my system update fucntions
-                ballPhyisicsSystem.update();
-                // render system
-                lveRenderer.beginSwapChainRenderPass(commandBuffer);
-                simpleRendererSystem.renderGameObjects(commandBuffer, gameObjects);
-
+              
                 //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
         
-          
-           
-             if (g_SwapChainRebuild)
-        {
-            int width, height;
-            glfwGetFramebufferSize(window, &width, &height);
-            if (width > 0 && height > 0)
-            {
-                ImGui_ImplVulkan_SetMinImageCount(g_MinImageCount);
-                g_MainWindowData.FrameIndex = 0;
-                g_SwapChainRebuild = false;
-            }
-        }
-                
-              
-                //ImGui_ImplVulkan_SetMinImageCount(g_MinImageCount);
+          ImGui_ImplVulkan_SetMinImageCount(g_MinImageCount);
                 //postavi min image
                    
                 // ImGui_ImplVulkanH_CreateOrResizeWindow(g_Instance, g_PhysicalDevice, g_Device, &g_MainWindowData,
                 //                                g_QueueFamily, g_Allocator,lveRenderer.getSpawChainWidth(),lveRenderer.getSpawChainHeight(), g_MinImageCount);
                  //postavi na wd->swapChain, wd->renderPass, wd ->ImageCount
 
-                 VkRenderPass imGuiRenderPass ;
-            createImguiRenderpass(lveDevice.device(), &imGuiRenderPass, lveRenderer.getSwapChain()->getSwapChainImageFormat(),lveRenderer.getSwapChain()->findDepthFormat());
+                 VkRenderPass imGuiRenderPass  ;
+    createImguiRenderpass(lveDevice.device(), &imGuiRenderPass, lveRenderer.getSwapChain()->getSwapChainImageFormat(),lveRenderer.getSwapChain()->findDepthFormat());
                  wd->Swapchain = lveRenderer.getSwapChain()->getSwapChainMYFUNCTION();
                  wd->RenderPass = imGuiRenderPass;
                  wd->ImageCount = lveRenderer.getSwapChain() -> imageCount();
@@ -697,8 +710,7 @@ namespace lve
         ImGui::NewFrame();
      
 
-     if (show_demo_window)
-            ImGui::ShowDemoWindow(&show_demo_window);
+     
 
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
         {
@@ -743,70 +755,79 @@ namespace lve
         wd->ClearValue.color.float32[1] = clear_color.y * clear_color.w;
         wd->ClearValue.color.float32[2] = clear_color.z * clear_color.w;
         wd->ClearValue.color.float32[3] = clear_color.w;
-      
-              VkCommandBuffer bufferimgui= lveDevice.beginSingleTimeCommands();
-           if (!main_is_minimized)
-           {
-                ///bufferimgui = lveDevice.beginSingleTimeCommands();
 
+    VkCommandBuffer bufferimgui =lveDevice.beginSingleTimeCommands();;
+        if (!main_is_minimized)
+        {
+            VkResult err = lveRenderer.getSwapChain()->acquireNextImage(lveRenderer.getCurrentImageIndex());
+            if (err == VK_ERROR_OUT_OF_DATE_KHR || err == VK_SUBOPTIMAL_KHR)
+            {
+                g_SwapChainRebuild = true;
+                return;
+            }
+            check_vk_result(err);
 
-               // FrameRender(wd, main_draw_data);
-               // Record dear imgui primitives into command buffer
-              
-        VkRenderPassBeginInfo info = {};
+            
+            // FrameRender(wd, main_draw_data);
+            //   Record dear imgui primitives into command buffer
+                VkRenderPassBeginInfo info = {};
         info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        info.renderPass = imGuiRenderPass;
-        info.framebuffer = lveRenderer.getSwapChain()->getFrameBuffer(*lveRenderer.getCurrentImageIndex());
+        info.renderPass = wd->RenderPass;
+        info.framebuffer = lveRenderer.getSwapChain()->getFrameBuffer(lveRenderer.getCurrentFrameIndex());
         info.renderArea.extent.width = wd->Width;
         info.renderArea.extent.height = wd->Height;
-        info.clearValueCount = 1;
+        info.clearValueCount = 2;
         info.pClearValues = &wd->ClearValue;
-  
-
-//   VkRenderPassBeginInfo info = {};
-//          info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-//             info.renderPass = imGuiRenderPass;
-//             info.framebuffer = lveRenderer.getSwapChain()->getFrameBuffer(*lveRenderer.getCurrentImageIndex());
-
-//             info.renderArea.offset ={0,0};
-//             info.renderArea.extent = lveRenderer.getSwapChain()-> getSwapChainExtent();
-
-//             std::array<VkClearValue, 2> clearValues{};
-//             clearValues[0].color = {0.01f, 0.01f, 0.01f, 1.0f}; //background color
-
-//             clearValues[1].depthStencil= {1.0f, 0};
-//             info.clearValueCount = static_cast<uint32_t>(clearValues.size());
-//             info.pClearValues = clearValues.data();
-
-
        vkCmdBeginRenderPass(bufferimgui, &info, VK_SUBPASS_CONTENTS_INLINE);
 
                ImGui_ImplVulkan_RenderDrawData(main_draw_data, bufferimgui);
-               
-            vkCmdEndRenderPass(bufferimgui);
-            lveDevice.endSingleTimeCommands(bufferimgui);
+                vkCmdEndRenderPass(bufferimgui);
+               lveDevice.endSingleTimeCommands(bufferimgui);
+        }
 
-           }
-
-       
            // Update and Render additional Platform Windows
            if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
            {
           
                ImGui::UpdatePlatformWindows();
-              ImGui::RenderPlatformWindowsDefault();
+               ImGui::RenderPlatformWindowsDefault();
         
            }
      
            // Present Main Platform Window
-           if (!main_is_minimized){
-               // lveRenderer.getSwapChain()->submitCommandBuffers(&bufferimgui, lveRenderer.getCurrentImageIndex());
-           }
+            if (!main_is_minimized){
+                lveRenderer.getSwapChain()->submitCommandBuffers(&bufferimgui, lveRenderer.getCurrentImageIndex());
+
+                 
+    }
+
+     ballPhyisicsSystem.update();
+
+      if (auto commandBuffer = lveRenderer.beginFrame())
+            {
+                // render system
+                lveRenderer.beginSwapChainRenderPass(commandBuffer);
+                simpleRendererSystem.renderGameObjects(commandBuffer, gameObjects);
+                lveRenderer.endSwapChainRenderPass(commandBuffer);
+                  lveRenderer.endFrame();
+           
+            
+                
+              
+          
+          
            //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-           vkDestroyRenderPass(lveDevice.device(), imGuiRenderPass,nullptr);
-           lveRenderer.endSwapChainRenderPass(commandBuffer);
-           lveRenderer.endFrame();
+           
+           
+         
+
+
+            
             }
+
+            // throw std::runtime_error("na kraju loopa");
+
+          
         }
 
         vkDeviceWaitIdle(lveDevice.device());

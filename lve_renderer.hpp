@@ -25,6 +25,7 @@ namespace lve{
         std::vector<VkSemaphore> getAvailableImageSemafors(){return lveSwapChain->getAvailableSemafors();}
          std::vector<VkSemaphore> getFinishedImageSemafors(){return lveSwapChain->getFinishedSemafors();}
         int getCurrentFrameIndex(){return currentFrameIndex;}
+        uint32_t* getCurrentImageIndex(){return &currentImageIndex;}
         VkCommandBuffer getCurrentCommandBuffer()const{
             assert(isFrameStarted && "Cannot get command buffer when frame not in progress");
             return commandBuffers[currentFrameIndex];
