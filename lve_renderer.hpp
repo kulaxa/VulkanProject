@@ -36,7 +36,7 @@ namespace lve{
         void endFrame();
        void beginSwapChainRenderPass(VkCommandBuffer commandBuffer);
          void endSwapChainRenderPass(VkCommandBuffer commandBuffer);
-
+        float getAspectRatio() const{return  lveSwapChain -> extentAspectRatio();}
         std::unique_ptr<LveSwapChain> getSwapChain(){return std::move(lveSwapChain);}
 
         private:

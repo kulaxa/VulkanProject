@@ -1,7 +1,7 @@
 #include "first_app.hpp"
 #include "simple_render_system.hpp"
 //#include "lve_ball_physics.hpp"
-
+#include "lve_camera.hpp"
 
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -28,7 +28,8 @@ namespace lve
     void FirstApp::run()
     {
         SimpleRendererSystem simpleRendererSystem{lveDevice, lveRenderer.getSwapChainRenderPass()};
-
+        LveCamera camera{};
+        
        // PhysicsSystem ballPhyisicsSystem(gameObjects);
         
 
@@ -37,7 +38,10 @@ namespace lve
         {
 
             glfwPollEvents(); // gleda sve user evenete
-           
+            float aspect = lveRenderer.getAspectRatio();
+         //  camera.setOrthographicProjection(-aspect,aspect ,-1,1,-1,1);
+            camera.setPerspectiveProjection(glm::radians(50.f), aspect, .1f, 10.f);
+
             if (auto commandBuffer = lveRenderer.beginFrame())
             {
 
@@ -49,7 +53,7 @@ namespace lve
                // ballPhyisicsSystem.update();
                 // render system
                 lveRenderer.beginSwapChainRenderPass(commandBuffer);
-                simpleRendererSystem.renderGameObjects(commandBuffer, gameObjects);
+                simpleRendererSystem.renderGameObjects(commandBuffer, gameObjects, camera);
                 lveRenderer.endSwapChainRenderPass(commandBuffer);
                 lveRenderer.endFrame();
             }
@@ -226,19 +230,19 @@ std::unique_ptr<LveModel> createCubeModel(LveDevice& device, glm::vec3 offset) {
         // float maxSpeed = 0.02f;
         // loadBalls(numOfBalls, maxRadius, delta, maxSpeed, vertices);
        
-//         std::shared_ptr<LveModel> lveModel = createCubeModel(lveDevice, {.0f, .0f, .0f});
-//   auto cube = LveGameObject::createGameObject();
-//   cube.model = lveModel;
-//   cube.transform.translation = {.0f, .0f, .5f};
-//   cube.transform.scale = {.5f, .5f, .5f};
-  //gameObjects.push_back(std::move(cube));
+        std::shared_ptr<LveModel> lveModel = createCubeModel(lveDevice, {.0f, .0f, .0f});
+  auto cube = LveGameObject::createGameObject();
+  cube.model = lveModel;
+  cube.transform.translation = {.0f, .0f, 2.5f};
+  cube.transform.scale = {.5f, .5f, .5f};
+  gameObjects.push_back(std::move(cube));
 
-   makeCircle({{0.f, 0.f ,0.0f}}, 0.5f, 0.1, &vertices);
- //  makeAlmostSpehere({{0.f, 0.f ,-1.f}}, 0.5f, 0.1, &vertices);
-   std::shared_ptr<LveModel> lveModelCircle = std::make_unique<LveModel>(lveDevice, vertices);
-   auto circle = LveGameObject::createGameObject();
-   circle.model = lveModelCircle;
-   gameObjects.push_back(std::move(circle));
+  // makeCircle({{0.f, 0.f ,0.0f}}, 0.5f, 0.1, &vertices);
+  // makeAlmostSpehere({{0.f, 0.f ,-1.f}}, 0.5f, 0.1, &vertices);
+//    std::shared_ptr<LveModel> lveModelCircle = std::make_unique<LveModel>(lveDevice, vertices);
+//    auto circle = LveGameObject::createGameObject();
+//    circle.model = lveModelCircle;
+//    gameObjects.push_back(std::move(circle));
 
     }
 
