@@ -129,7 +129,7 @@ namespace lve
             //float g = unifColor(rng);
             //float b = unifColor(rng);
                 float r = 1.0f;
-                float g = 1.0f;
+                float g = 0.f;
                 float b = 1.0f;
             float radius = unifRadius(rng);
 

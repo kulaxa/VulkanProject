@@ -323,7 +323,7 @@ float roundoff(float value, unsigned char prec)
 
 
     glm::vec3 PhysicsSystem::getColorFromSpeed(LveGameObject& obj){
-        glm::vec3 result;
+        glm::vec3 result = obj.color;
      
         
 
@@ -336,8 +336,9 @@ float roundoff(float value, unsigned char prec)
         //        result.b = (obj.getSpeed() / minSpeed);
         // }
 
+
         result.r = (obj.getSpeed() / maxSpeed);
-         result.b = (obj.getSpeed() / minSpeed);
+         result.b =  (0.005/ obj.getSpeed()  );
         
         return result;
     }
