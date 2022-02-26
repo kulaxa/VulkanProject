@@ -4,6 +4,8 @@ namespace lve{
 
     class PhysicsSystem{
         public:
+            static constexpr float latencyConst= 0.035f;
+
             PhysicsSystem(std::vector<LveGameObject>& gameObjects);
 
             void update();

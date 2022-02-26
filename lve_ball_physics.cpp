@@ -11,7 +11,7 @@ namespace lve
         static std::vector<int> escaped;
         calcMinMaxSpeed();
        
-     //   std::cout << "min speed: "<<minSpeed << ", max speed: "<<maxSpeed << std::endl;
+        //std::cout << "min speed: "<<minSpeed << ", max speed: "<<maxSpeed << std::endl;
         
         for (auto &obj : gameObjects)
         {
@@ -60,7 +60,8 @@ namespace lve
                     std::cout << "object [" << obj.getId() << "] escaped, pos: {"
                               << obj.tranform2d.translation.x << ", "
                               << obj.tranform2d.translation.y << "}"
-                              << ", speed : " << obj.getSpeed() << ", escaped count: " << escaped.size()
+                              << ", speed : " << obj.getSpeed() << ", escaped count: " << escaped.size()<<
+                              ", radius : "<<obj.radius 
                               << std::endl;
                 }
             }
@@ -131,10 +132,10 @@ namespace lve
          float radius = object1.radius;
         float posX = object1.tranform2d.translation.x;
         float posY = object1.tranform2d.translation.y;
-  
-
-         float nextPosX = object1.tranform2d.translation.x +object1.speedVec.x ;
-        float nextPosY = object1.tranform2d.translation.y +object1.speedVec.y  ;
+        
+        float posMultiplyer = object1.getSpeed() / (latencyConst/(0.05/object1.radius)); 
+         float nextPosX = object1.tranform2d.translation.x +posMultiplyer*object1.speedVec.x ;
+        float nextPosY = object1.tranform2d.translation.y +posMultiplyer*object1.speedVec.y  ;
 
 
          //posX+radius >= 1.0f  ||
@@ -289,9 +290,10 @@ float roundoff(float value, unsigned char prec)
 
         float distance = sqrt(pow(posX-otherPosX, 2.0f) + pow(posY-otherPosY, 2.0f));
 
-
-        float nextPosX = object1.tranform2d.translation.x +object1.speedVec.x ;
-        float nextPosY = object1.tranform2d.translation.y +object1.speedVec.y ;
+        float posMultiplyer = object1.getSpeed() / (latencyConst*(0.05/object1.radius));
+        float posMUltiplyer2 = object2.getSpeed() / (latencyConst*(0.05/object2.radius));
+        float nextPosX = object1.tranform2d.translation.x +posMultiplyer*object1.speedVec.x ;
+        float nextPosY = object1.tranform2d.translation.y +posMUltiplyer2*object1.speedVec.y ;
 
         float otherNextPosX = object2.tranform2d.translation.x +object2.speedVec.x  ;
         float otherNextPosY = object2.tranform2d.translation.y +object2.speedVec.y ;

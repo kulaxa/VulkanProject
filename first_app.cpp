@@ -172,8 +172,8 @@ namespace lve
         //     triangle.tranform2d.scale={2.f, 0.5f};
         //     triangle.tranform2d.rotation = 0.25f*glm::two_pi<float>();
         //       gameObjects.push_back(std::move(triangle));
-        int numOfBalls = 15;
-        float maxRadius = 0.1f;
+        int numOfBalls = 70;
+        float maxRadius = 0.065f;
         float delta = 0.005f;
         float maxSpeed = 0.02f;
         loadBalls(numOfBalls, maxRadius, delta, maxSpeed, vertices);
