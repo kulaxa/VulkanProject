@@ -5,8 +5,8 @@
 #include "lve_device.hpp"
 #include "lve_model.hpp"
 #include "lve_game_object.hpp"
-
-
+#include "imgui.h"
+#include "imgui_impl_vulkan.h"
 
 #include <memory>
 #include <vector>
@@ -21,7 +21,7 @@ namespace lve{
         SimpleRendererSystem(const SimpleRendererSystem&) = delete;
         SimpleRendererSystem &operator=(const SimpleRendererSystem &) = delete;
         
-
+        void renderImgui(VkCommandBuffer commandBuffer, ImDrawData* drawData);
         void renderGameObjects(VkCommandBuffer commandBuffer, std::vector<LveGameObject> &GameObjects);
         private:
           
