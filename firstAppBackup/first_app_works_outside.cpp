@@ -522,17 +522,17 @@ namespace lve
 
      
 
-  // ImGui_ImplVulkanH_CreateOrResizeWindow(g_Instance, g_PhysicalDevice, g_Device, wd, g_QueueFamily, g_Allocator, w, h, g_MinImageCount);
+   // ImGui_ImplVulkanH_CreateOrResizeWindow(g_Instance, g_PhysicalDevice, g_Device, wd, g_QueueFamily, g_Allocator, w, h, g_MinImageCount);
     //ta fukncija napravi novi swapchiain i commandbuffer
     //postavi na wd->swapChain, wd->renderPass, wd ->ImageCount
 
-   // VkRenderPass imGuiRenderPass ;
-   // createImguiRenderpass(lveDevice.device(), &imGuiRenderPass, lveRenderer.getSwapChain()->getSwapChainImageFormat(), lveRenderer.getSwapChain()->findDepthFormat());
+    VkRenderPass imGuiRenderPass ;
+    createImguiRenderpass(lveDevice.device(), &imGuiRenderPass, lveRenderer.getSwapChain()->getSwapChainImageFormat(), lveRenderer.getSwapChain()->findDepthFormat());
 
       wd->Swapchain = lveRenderer.getSwapChain()->getSwapChainMYFUNCTION();
-                wd->RenderPass = lveRenderer.getSwapChain() -> getRenderPass();
+                // wd->RenderPass = lveRenderer.getSwapChain() -> getRenderPass();
                  wd->ImageCount = lveRenderer.getSwapChain() -> imageCount();
-                 //wd->RenderPass = imGuiRenderPass;
+                 wd->RenderPass = imGuiRenderPass;
    
      //ImGui_ImplVulkanH_Window* wd = &g_MainWindowData;
        
@@ -643,7 +643,7 @@ namespace lve
             glfwPollEvents(); // gleda sve user evenete
    
 
-            if (auto bufferimgui = lveRenderer.beginFrame())
+            if (auto commandBuffer = lveRenderer.beginFrame())
             {
 
                 // imgui commands
@@ -653,12 +653,18 @@ namespace lve
                 // my system update fucntions
                 ballPhyisicsSystem.update();
                 // render system
-               lveRenderer.beginSwapChainRenderPass(bufferimgui);
-              simpleRendererSystem.renderGameObjects(bufferimgui, gameObjects);
-           //lveRenderer.endSwapChainRenderPass(commandBuffer);
+               lveRenderer.beginSwapChainRenderPass(commandBuffer);
+              simpleRendererSystem.renderGameObjects(commandBuffer, gameObjects);
+           lveRenderer.endSwapChainRenderPass(commandBuffer);
+                
+           lveRenderer.endFrame();
+            }
 
+                //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
-  //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+        
+          
+           
              if (g_SwapChainRebuild)
         {
             int width, height;
@@ -679,11 +685,10 @@ namespace lve
                 //                                g_QueueFamily, g_Allocator,lveRenderer.getSpawChainWidth(),lveRenderer.getSpawChainHeight(), g_MinImageCount);
                  //postavi na wd->swapChain, wd->renderPass, wd ->ImageCount
 
-                // VkRenderPass imGuiRenderPass ;
-          // createImguiRenderpass(lveDevice.device(), &imGuiRenderPass, lveRenderer.getSwapChain()->getSwapChainImageFormat(),lveRenderer.getSwapChain()->findDepthFormat());
+                 VkRenderPass imGuiRenderPass ;
+            createImguiRenderpass(lveDevice.device(), &imGuiRenderPass, lveRenderer.getSwapChain()->getSwapChainImageFormat(),lveRenderer.getSwapChain()->findDepthFormat());
                  wd->Swapchain = lveRenderer.getSwapChain()->getSwapChainMYFUNCTION();
-                // wd->RenderPass = imGuiRenderPass;
-                wd->RenderPass = lveRenderer.getSwapChain() -> getRenderPass();
+                 wd->RenderPass = imGuiRenderPass;
                  wd->ImageCount = lveRenderer.getSwapChain() -> imageCount();
           
                   
@@ -697,7 +702,7 @@ namespace lve
      
 
      if (show_demo_window)
-           // ImGui::ShowDemoWindow(&show_demo_window);
+            ImGui::ShowDemoWindow(&show_demo_window);
 
         // 2. Show a simple window that we create ourselves. We use a Begin/End pair to created a named window.
         {
@@ -742,8 +747,8 @@ namespace lve
         wd->ClearValue.color.float32[1] = clear_color.y * clear_color.w;
         wd->ClearValue.color.float32[2] = clear_color.z * clear_color.w;
         wd->ClearValue.color.float32[3] = clear_color.w;
-              //  lveRenderer.getSwapChain()->acquireNextImage(lveRenderer.getCurrentImageIndex());
-              //VkCommandBuffer bufferimgui= lveDevice.beginSingleTimeCommands();
+                lveRenderer.getSwapChain()->acquireNextImage(lveRenderer.getCurrentImageIndex());
+              VkCommandBuffer bufferimgui= lveDevice.beginSingleTimeCommands();
            if (!main_is_minimized)
            {
                 ///bufferimgui = lveDevice.beginSingleTimeCommands();
@@ -752,19 +757,19 @@ namespace lve
                // FrameRender(wd, main_draw_data);
                // Record dear imgui primitives into command buffer
               
-        // VkRenderPassBeginInfo info = {};
-        // info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-        // info.renderPass =  lveRenderer.getSwapChain() -> getRenderPass();
-        // info.framebuffer = lveRenderer.getSwapChain()->getFrameBuffer(*lveRenderer.getCurrentImageIndex());
-        // info.renderArea.extent.width = wd->Width;
-        // info.renderArea.extent.height = wd->Height;
-        // info.clearValueCount = 1;
-        // info.pClearValues = &wd->ClearValue;
+        VkRenderPassBeginInfo info = {};
+        info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+        info.renderPass = imGuiRenderPass;
+        info.framebuffer = lveRenderer.getSwapChain()->getFrameBuffer(*lveRenderer.getCurrentImageIndex());
+        info.renderArea.extent.width = wd->Width;
+        info.renderArea.extent.height = wd->Height;
+        info.clearValueCount = 1;
+        info.pClearValues = &wd->ClearValue;
   
 
 //   VkRenderPassBeginInfo info = {};
 //          info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-//             info.renderPass = lveRenderer.getSwapChainRenderPass();
+//             info.renderPass = imGuiRenderPass;
 //             info.framebuffer = lveRenderer.getSwapChain()->getFrameBuffer(*lveRenderer.getCurrentImageIndex());
 
 //             info.renderArea.offset ={0,0};
@@ -778,12 +783,12 @@ namespace lve
 //             info.pClearValues = clearValues.data();
 
 
-     //  vkCmdBeginRenderPass(bufferimgui, &info, VK_SUBPASS_CONTENTS_INLINE);
+       vkCmdBeginRenderPass(bufferimgui, &info, VK_SUBPASS_CONTENTS_INLINE);
 
                ImGui_ImplVulkan_RenderDrawData(main_draw_data, bufferimgui);
                
-         //   vkCmdEndRenderPass(bufferimgui);
-          //  lveDevice.endSingleTimeCommands(bufferimgui);
+            vkCmdEndRenderPass(bufferimgui);
+            lveDevice.endSingleTimeCommands(bufferimgui);
 
            }
 
@@ -799,19 +804,10 @@ namespace lve
      
            // Present Main Platform Window
            if (!main_is_minimized){
-              //  lveRenderer.getSwapChain()->submitCommandBuffers(&bufferimgui, lveRenderer.getCurrentImageIndex());
+                lveRenderer.getSwapChain()->submitCommandBuffers(&bufferimgui, lveRenderer.getCurrentImageIndex());
            }
            //$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-          // vkDestroyRenderPass(lveDevice.device(), imGuiRenderPass,nullptr);
-                 lveRenderer.endSwapChainRenderPass(bufferimgui);
-           lveRenderer.endFrame();
-            }
-
-              
-
-        
-          
-           
+           vkDestroyRenderPass(lveDevice.device(), imGuiRenderPass,nullptr);
         
         }
 
