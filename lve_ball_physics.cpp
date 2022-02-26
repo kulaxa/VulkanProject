@@ -11,10 +11,11 @@ namespace lve
         static std::vector<int> escaped;
         calcMinMaxSpeed();
        
-        //std::cout << "min speed: "<<minSpeed << ", max speed: "<<maxSpeed << std::endl;
+     //   std::cout << "min speed: "<<minSpeed << ", max speed: "<<maxSpeed << std::endl;
+        
         for (auto &obj : gameObjects)
         {
-                
+            obj.speedVec *= 0.999f;        
             if (checkIfCollidedWithWall(obj))
             {
 
@@ -326,21 +327,24 @@ float roundoff(float value, unsigned char prec)
      
         
 
-        if(maxSpeed - obj.getSpeed()  < obj.getSpeed() - minSpeed){
-            result.r = (obj.getSpeed() / maxSpeed);
-            result.b = 0.1f;
-        }
-        else{
-                result.r = 0.1f;
-               result.b = (obj.getSpeed() / minSpeed);
-        }
+        // if(maxSpeed - obj.getSpeed()  < obj.getSpeed() - minSpeed){
+        //     result.r = (obj.getSpeed() / maxSpeed);
+        //     result.b = 0.1f;
+        // }
+        // else{
+        //         result.r = 0.1f;
+        //        result.b = (obj.getSpeed() / minSpeed);
+        // }
+
+        result.r = (obj.getSpeed() / maxSpeed);
+         result.b = (obj.getSpeed() / minSpeed);
         
         return result;
     }
 
     void PhysicsSystem::calcMinMaxSpeed(){
-        minSpeed = 100.f;
-        maxSpeed = -1.0f;
+      //  minSpeed = 100.f;
+        //maxSpeed = -1.0f;
         for(auto& obj: gameObjects){
            
             if(obj.getSpeed() > maxSpeed){

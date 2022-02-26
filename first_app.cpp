@@ -125,12 +125,12 @@ namespace lve
                 positions.push_back({xPos, yPos});
             }
 
-            float r = unifColor(rng);
-            float g = unifColor(rng);
-            float b = unifColor(rng);
-            //    float r = 1.0f;
-            //    float g = 1.0f;
-            //    float b = 1.0f;
+            //float r = unifColor(rng);
+            //float g = unifColor(rng);
+            //float b = unifColor(rng);
+                float r = 1.0f;
+                float g = 1.0f;
+                float b = 1.0f;
             float radius = unifRadius(rng);
 
             vertices.clear();
