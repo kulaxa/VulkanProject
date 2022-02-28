@@ -17,9 +17,15 @@ namespace lve{
         LveRenderer(const LveRenderer&) = delete;
         LveRenderer &operator=(const LveRenderer &) = delete;
 
-        VkRenderPass getSwapChainRenderPass() const {return lveSwapChain ->getRenderPass();}
+        VkRenderPass getSwapChainRenderPass()const{return lveSwapChain ->getRenderPass();}
         bool isFrameInProgress() const{return isFrameStarted;}
-
+        VkFormat getImageFormat(){return lveSwapChain->getSwapChainImageFormat();}
+        int getSpawChainHeight(){return lveSwapChain->height();}
+         int getSpawChainWidth(){return lveSwapChain->width();}
+        std::vector<VkSemaphore> getAvailableImageSemafors(){return lveSwapChain->getAvailableSemafors();}
+         std::vector<VkSemaphore> getFinishedImageSemafors(){return lveSwapChain->getFinishedSemafors();}
+        int getCurrentFrameIndex(){return currentFrameIndex;}
+        uint32_t* getCurrentImageIndex(){return &currentImageIndex;}
         VkCommandBuffer getCurrentCommandBuffer()const{
             assert(isFrameStarted && "Cannot get command buffer when frame not in progress");
             return commandBuffers[currentFrameIndex];
@@ -37,7 +43,7 @@ namespace lve{
        void beginSwapChainRenderPass(VkCommandBuffer commandBuffer);
          void endSwapChainRenderPass(VkCommandBuffer commandBuffer);
 
-        //std::unique_ptr<LveSwapChain> getSwapChain(){return std::move(lveSwapChain);}
+        LveSwapChain* getSwapChain(){return lveSwapChain.get();}
         size_t getImageCount(){return lveSwapChain -> imageCount();}
         private:
             

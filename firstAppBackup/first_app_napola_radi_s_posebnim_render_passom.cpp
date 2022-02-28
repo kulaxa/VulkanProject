@@ -71,8 +71,113 @@ static VKAPI_ATTR VkBool32 VKAPI_CALL debug_report(VkDebugReportFlagsEXT flags, 
 
 //#######################################################################
 namespace lve
+{void createImguiRenderpass(VkDevice device, VkRenderPass *imGuiRenderPass, VkFormat imageFormat, VkFormat depthFormat)
+    {
+            VkAttachmentDescription attachment = {};
+        attachment.format = imageFormat;
+        attachment.samples = VK_SAMPLE_COUNT_1_BIT;
+        attachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR ;
+        attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+        attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+        attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+        attachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+        attachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+        VkAttachmentReference color_attachment = {};
+        color_attachment.attachment = 0;
+        color_attachment.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+        VkSubpassDescription subpass = {};
+        subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+        subpass.colorAttachmentCount = 1;
+        subpass.pColorAttachments = &color_attachment;
+        VkSubpassDependency dependency = {};
+        dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+        dependency.dstSubpass = 0;
+        dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+        dependency.srcAccessMask = 0;
+        dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+        VkRenderPassCreateInfo info = {};
+        info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+        info.attachmentCount = 1;
+        info.pAttachments = &attachment;
+        info.subpassCount = 1;
+        info.pSubpasses = &subpass;
+        info.dependencyCount = 1;
+        info.pDependencies = &dependency;
+              if (vkCreateRenderPass(device, &info, nullptr, imGuiRenderPass) != VK_SUCCESS)
+        {
+            throw std::runtime_error("Could not create Dear ImGui's render pass");
+        }
 
-{
+//         VkAttachmentDescription attachment = {};
+//         attachment.format = imageFormat;
+//         attachment.samples = VK_SAMPLE_COUNT_1_BIT;
+//         attachment.loadOp = VK_ATTACHMENT_LOAD_OP_LOAD;
+//         attachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+//         attachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+//         attachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+//         attachment.initialLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;//VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+//         attachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+
+// //           VkAttachmentDescription depthAttachment{};
+// //   depthAttachment.format = depthFormat;
+// //   depthAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+// //   depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+// //   depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+// //   depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+// //   depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+// //   depthAttachment.initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+// //   depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+// //   VkAttachmentReference depthAttachmentRef{};
+// //   depthAttachmentRef.attachment = 1;
+// //   depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+//         VkAttachmentReference color_attachment = {};
+//         color_attachment.attachment = 0;
+//         color_attachment.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+//         VkSubpassDescription subpass = {};
+//         subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+//         subpass.colorAttachmentCount = 1;
+//         subpass.pColorAttachments = &color_attachment;  
+//        // subpass.pDepthStencilAttachment = &depthAttachmentRef;
+
+//         VkSubpassDependency dependency = {};
+//         dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+//         dependency.dstSubpass = 0;
+//         dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+//         dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+//         dependency.srcAccessMask =   VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT; //0
+//         dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
+//         VkRenderPassCreateInfo info = {};
+//         info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+//         info.attachmentCount = 1;
+//         info.pAttachments = &attachment;
+//         info.subpassCount = 1;
+//         info.pSubpasses = &subpass;
+//         info.dependencyCount = 1;
+//         info.pDependencies = &dependency;
+
+// //         std::array<VkAttachmentDescription, 2> attachments = {attachment, depthAttachment};
+// //   VkRenderPassCreateInfo info = {};
+// //   info.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+// //   info.attachmentCount = static_cast<uint32_t>(attachments.size());
+// //   info.pAttachments = attachments.data();
+// //   info.subpassCount = 1;
+// //   info.pSubpasses = &subpass;
+// //   info.dependencyCount = 1;
+// //   info.pDependencies = &dependency;
+//         if (vkCreateRenderPass(device, &info, nullptr, imGuiRenderPass) != VK_SUCCESS)
+//         {
+//             throw std::runtime_error("Could not create Dear ImGui's render pass");
+//         }
+    }
+
+
+    
+
     FirstApp::FirstApp()
     {
         loadGameObjects();
@@ -87,7 +192,9 @@ namespace lve
     {
 
         SimpleRendererSystem simpleRendererSystem{lveDevice, lveRenderer.getSwapChainRenderPass()};
-         
+         VkRenderPass imGuiRenderPass ;
+    createImguiRenderpass(lveDevice.device(), &imGuiRenderPass, lveRenderer.getSwapChain()->getSwapChainImageFormat(), lveRenderer.getSwapChain()->findDepthFormat());
+        
        PhysicsSystem ballPhyisicsSystem(gameObjects);
         //###################################################################################################################
 
@@ -147,8 +254,8 @@ namespace lve
      wd->ImageCount = lveRenderer.getImageCount();
 
       wd->Swapchain = lveRenderer.getSwapChain()->getSwapChainMYFUNCTION();
-               wd->RenderPass = lveRenderer.getSwapChain() -> getRenderPass();
-         
+              //  wd->RenderPass = lveRenderer.getSwapChain() -> getRenderPass();
+              wd -> RenderPass = imGuiRenderPass;
                  wd->ImageCount = lveRenderer.getSwapChain() -> imageCount();
 
 
@@ -245,7 +352,9 @@ namespace lve
             {
 
                 ballPhyisicsSystem.update();
-             // render system
+                 VkRenderPass imGuiRenderPass ;
+    createImguiRenderpass(lveDevice.device(), &imGuiRenderPass, lveRenderer.getSwapChain()->getSwapChainImageFormat(), lveRenderer.getSwapChain()->findDepthFormat());
+                // render system
                lveRenderer.beginSwapChainRenderPass(bufferimgui);
               simpleRendererSystem.renderGameObjects(bufferimgui, gameObjects);
 
@@ -262,7 +371,8 @@ namespace lve
         }
 
                  wd->Swapchain = lveRenderer.getSwapChain()->getSwapChainMYFUNCTION();
-                wd->RenderPass = lveRenderer.getSwapChain() -> getRenderPass();
+              //  wd->RenderPass = lveRenderer.getSwapChain() -> getRenderPass();
+              wd->RenderPass =imGuiRenderPass;
                  wd->ImageCount = lveRenderer.getSwapChain() -> imageCount();
 
         // Start the Dear ImGui frame
@@ -336,14 +446,14 @@ namespace lve
          
 
         lveRenderer.endSwapChainRenderPass(bufferimgui);
-       
+        vkDestroyRenderPass(lveDevice.device(), imGuiRenderPass,nullptr);
            lveRenderer.endFrame();
             }
 
         }
 
         vkDeviceWaitIdle(lveDevice.device());
-       
+        vkDestroyRenderPass(lveDevice.device(), imGuiRenderPass,nullptr);
         ImGui_ImplVulkan_Shutdown();
         ImGui_ImplGlfw_Shutdown();
         ImGui::DestroyContext();

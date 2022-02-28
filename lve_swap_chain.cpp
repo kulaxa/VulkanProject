@@ -222,7 +222,8 @@ void LveSwapChain::createRenderPass() {
   depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
   depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
   depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-  depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+
+  depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;//VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;;
   depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
   VkAttachmentReference depthAttachmentRef{};
@@ -236,8 +237,8 @@ void LveSwapChain::createRenderPass() {
   colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
   colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
   colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-  colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-  colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+  colorAttachment.initialLayout =VK_IMAGE_LAYOUT_UNDEFINED;// VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;//
+  colorAttachment.finalLayout =VK_IMAGE_LAYOUT_PRESENT_SRC_KHR; //VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;// 
 
   VkAttachmentReference colorAttachmentRef = {};
   colorAttachmentRef.attachment = 0;
@@ -273,6 +274,11 @@ void LveSwapChain::createRenderPass() {
   if (vkCreateRenderPass(device.device(), &renderPassInfo, nullptr, &renderPass) != VK_SUCCESS) {
     throw std::runtime_error("failed to create render pass!");
   }
+
+
+  //fonts
+
+  
 }
 
 void LveSwapChain::createFramebuffers() {

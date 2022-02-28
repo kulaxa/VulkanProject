@@ -65,6 +65,7 @@
 
 #include "imgui_impl_vulkan.h"
 #include <stdio.h>
+#include <iostream>
 
 
 // Visual Studio warnings
@@ -835,6 +836,7 @@ static void ImGui_ImplVulkan_CreatePipelineLayout(VkDevice device, const VkAlloc
 
 static void ImGui_ImplVulkan_CreatePipeline(VkDevice device, const VkAllocationCallbacks* allocator, VkPipelineCache pipelineCache, VkRenderPass renderPass, VkSampleCountFlagBits MSAASamples, VkPipeline* pipeline, uint32_t subpass)
 {
+
     ImGui_ImplVulkan_Data* bd = ImGui_ImplVulkan_GetBackendData();
     ImGui_ImplVulkan_CreateShaderModules(device, allocator);
 
@@ -916,7 +918,7 @@ static void ImGui_ImplVulkan_CreatePipeline(VkDevice device, const VkAllocationC
     dynamic_state.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
     dynamic_state.dynamicStateCount = (uint32_t)IM_ARRAYSIZE(dynamic_states);
     dynamic_state.pDynamicStates = dynamic_states;
-
+ 
     ImGui_ImplVulkan_CreatePipelineLayout(device, allocator);
 
     VkGraphicsPipelineCreateInfo info = {};
@@ -935,6 +937,8 @@ static void ImGui_ImplVulkan_CreatePipeline(VkDevice device, const VkAllocationC
     info.layout = bd->PipelineLayout;
     info.renderPass = renderPass;
     info.subpass = subpass;
+
+   
     VkResult err = vkCreateGraphicsPipelines(device, pipelineCache, 1, &info, allocator, pipeline);
     check_vk_result(err);
 }
@@ -995,9 +999,10 @@ bool ImGui_ImplVulkan_CreateDeviceObjects()
         err = vkCreatePipelineLayout(v->Device, &layout_info, v->Allocator, &bd->PipelineLayout);
         check_vk_result(err);
     }
+    
 
     ImGui_ImplVulkan_CreatePipeline(v->Device, v->Allocator, v->PipelineCache, bd->RenderPass, v->MSAASamples, &bd->Pipeline, bd->Subpass);
-
+    
     return true;
 }
 
@@ -1058,11 +1063,13 @@ bool    ImGui_ImplVulkan_LoadFunctions(PFN_vkVoidFunction(*loader_func)(const ch
 
 bool    ImGui_ImplVulkan_Init(ImGui_ImplVulkan_InitInfo* info, VkRenderPass render_pass)
 {
+     
     IM_ASSERT(g_FunctionsLoaded && "Need to call ImGui_ImplVulkan_LoadFunctions() if IMGUI_IMPL_VULKAN_NO_PROTOTYPES or VK_NO_PROTOTYPES are set!");
 
     ImGuiIO& io = ImGui::GetIO();
+   
     IM_ASSERT(io.BackendRendererUserData == NULL && "Already initialized a renderer backend!");
-
+    
     // Setup backend capabilities flags
     ImGui_ImplVulkan_Data* bd = IM_NEW(ImGui_ImplVulkan_Data)();
     io.BackendRendererUserData = (void*)bd;
@@ -1082,9 +1089,9 @@ bool    ImGui_ImplVulkan_Init(ImGui_ImplVulkan_InitInfo* info, VkRenderPass rend
     bd->VulkanInitInfo = *info;
     bd->RenderPass = render_pass;
     bd->Subpass = info->Subpass;
-
+    
     ImGui_ImplVulkan_CreateDeviceObjects();
-
+     
     // Our render function expect RendererUserData to be storing the window render buffer we need (for the main viewport we won't use ->Window)
     ImGuiViewport* main_viewport = ImGui::GetMainViewport();
     main_viewport->RendererUserData = IM_NEW(ImGui_ImplVulkan_ViewportData)();
@@ -1323,12 +1330,13 @@ int ImGui_ImplVulkanH_GetMinImageCountFromPresentMode(VkPresentModeKHR present_m
 // Also destroy old swap chain and in-flight frames data, if any.
 void ImGui_ImplVulkanH_CreateWindowSwapChain(VkPhysicalDevice physical_device, VkDevice device, ImGui_ImplVulkanH_Window* wd, const VkAllocationCallbacks* allocator, int w, int h, uint32_t min_image_count)
 {
+           
     VkResult err;
     VkSwapchainKHR old_swapchain = wd->Swapchain;
     wd->Swapchain = VK_NULL_HANDLE;
     err = vkDeviceWaitIdle(device);
     check_vk_result(err);
-
+    
     // We don't use ImGui_ImplVulkanH_DestroyWindow() because we want to preserve the old swapchain to create the new one.
     // Destroy old Framebuffer
     for (uint32_t i = 0; i < wd->ImageCount; i++)
@@ -1336,6 +1344,7 @@ void ImGui_ImplVulkanH_CreateWindowSwapChain(VkPhysicalDevice physical_device, V
         ImGui_ImplVulkanH_DestroyFrame(device, &wd->Frames[i], allocator);
         ImGui_ImplVulkanH_DestroyFrameSemaphores(device, &wd->FrameSemaphores[i], allocator);
     }
+    
     IM_FREE(wd->Frames);
     IM_FREE(wd->FrameSemaphores);
     wd->Frames = NULL;
@@ -1384,15 +1393,19 @@ void ImGui_ImplVulkanH_CreateWindowSwapChain(VkPhysicalDevice physical_device, V
             info.imageExtent.width = wd->Width = cap.currentExtent.width;
             info.imageExtent.height = wd->Height = cap.currentExtent.height;
         }
+        std::cout<<"prije stvaranja swapchaina \n";
         err = vkCreateSwapchainKHR(device, &info, allocator, &wd->Swapchain);
+           std::cout<<"nakon stvaranja swapchaina "<<err<<std::endl;
         check_vk_result(err);
         err = vkGetSwapchainImagesKHR(device, wd->Swapchain, &wd->ImageCount, NULL);
         check_vk_result(err);
+            std::cout<<"nakon swapchain images swapchaina \n";
         VkImage backbuffers[16] = {};
         IM_ASSERT(wd->ImageCount >= min_image_count);
         IM_ASSERT(wd->ImageCount < IM_ARRAYSIZE(backbuffers));
         err = vkGetSwapchainImagesKHR(device, wd->Swapchain, &wd->ImageCount, backbuffers);
         check_vk_result(err);
+                    std::cout<<"nakon swapchain imagges \n";
 
         IM_ASSERT(wd->Frames == NULL);
         wd->Frames = (ImGui_ImplVulkanH_Frame*)IM_ALLOC(sizeof(ImGui_ImplVulkanH_Frame) * wd->ImageCount);
@@ -1494,8 +1507,11 @@ void ImGui_ImplVulkanH_CreateOrResizeWindow(VkInstance instance, VkPhysicalDevic
     IM_ASSERT(g_FunctionsLoaded && "Need to call ImGui_ImplVulkan_LoadFunctions() if IMGUI_IMPL_VULKAN_NO_PROTOTYPES or VK_NO_PROTOTYPES are set!");
     (void)instance;
     ImGui_ImplVulkanH_CreateWindowSwapChain(physical_device, device, wd, allocator, width, height, min_image_count);
+  
     //ImGui_ImplVulkan_CreatePipeline(device, allocator, VK_NULL_HANDLE, wd->RenderPass, VK_SAMPLE_COUNT_1_BIT, &wd->Pipeline, g_VulkanInitInfo.Subpass);
     ImGui_ImplVulkanH_CreateWindowCommandBuffers(physical_device, device, wd, queue_family, allocator);
+    
+
 }
 
 void ImGui_ImplVulkanH_DestroyWindow(VkInstance instance, VkDevice device, ImGui_ImplVulkanH_Window* wd, const VkAllocationCallbacks* allocator)

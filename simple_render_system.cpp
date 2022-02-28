@@ -69,6 +69,10 @@ namespace lve{
     }
 
 
+ void SimpleRendererSystem::renderImgui(VkCommandBuffer commandBuffer, ImDrawData* drawData){
+      ImGui_ImplVulkan_RenderDrawData(drawData, commandBuffer);//,lvePipeline->getPipeline());
+ }
+
     void SimpleRendererSystem::renderGameObjects(VkCommandBuffer commandBuffer, std::vector<LveGameObject> &gameObjects){
         lvePipeline ->bind(commandBuffer);
   
