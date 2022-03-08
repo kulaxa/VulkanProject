@@ -29,7 +29,7 @@ namespace lve
     {
         SimpleRendererSystem simpleRendererSystem{lveDevice, lveRenderer.getSwapChainRenderPass()};
 
-        PhysicsSystem ballPhyisicsSystem(gameObjects);
+       PhysicsSystem ballPhyisicsSystem(gameObjects);
         
 
        
@@ -46,7 +46,7 @@ namespace lve
                 // your draw function
 
                 // my system update fucntions
-                ballPhyisicsSystem.update();
+               ballPhyisicsSystem.update();
                 // render system
                 lveRenderer.beginSwapChainRenderPass(commandBuffer);
                 simpleRendererSystem.renderGameObjects(commandBuffer, gameObjects);
@@ -162,6 +162,7 @@ namespace lve
     {
         //
         std::vector<LveModel::Vertex> vertices{
+
 
         };
         //     auto lveModel1 = std::make_shared<LveModel>(lveDevice, vertices);
