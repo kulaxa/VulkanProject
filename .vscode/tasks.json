@@ -7,9 +7,14 @@
             "args": [
                 "-fdiagnostics-color=always",
                 "-g",
-                "${file}",
+                "-std=c++17", 
+                
                 "-o",
-                "${fileDirname}/${fileBasenameNoExtension}"
+                "${fileDirname}/${fileBasenameNoExtension}",
+                "*.cpp",
+                "-lglfw",
+                "-lvulkan",
+                 "-ldl", "-lpthread", "-lX11", "-lXrandr"
             ],
             "options": {
                 "cwd": "${fileDirname}"
