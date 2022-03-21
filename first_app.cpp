@@ -224,25 +224,12 @@ std::unique_ptr<LveModel> createCubeModel(LveDevice& device, glm::vec3 offset) {
     {
         //
         std::vector<LveModel::Vertex> vertices;
-        // int numOfBalls = 15;
-        // float maxRadius = 0.1f;
-        // float delta = 0.005f;
-        // float maxSpeed = 0.02f;
-        // loadBalls(numOfBalls, maxRadius, delta, maxSpeed, vertices);
-       
         std::shared_ptr<LveModel> lveModel = createCubeModel(lveDevice, {.0f, .0f, .0f});
   auto cube = LveGameObject::createGameObject();
   cube.model = lveModel;
   cube.transform.translation = {.0f, .0f, 2.5f};
   cube.transform.scale = {.5f, .5f, .5f};
   gameObjects.push_back(std::move(cube));
-
-  // makeCircle({{0.f, 0.f ,0.0f}}, 0.5f, 0.1, &vertices);
-  // makeAlmostSpehere({{0.f, 0.f ,-1.f}}, 0.5f, 0.1, &vertices);
-//    std::shared_ptr<LveModel> lveModelCircle = std::make_unique<LveModel>(lveDevice, vertices);
-//    auto circle = LveGameObject::createGameObject();
-//    circle.model = lveModelCircle;
-//    gameObjects.push_back(std::move(circle));
 
     }
 
