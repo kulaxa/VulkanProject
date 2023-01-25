@@ -1,0 +1,15 @@
+CFLAGS = -std=c++17 -O2
+LDFLAGS = -lglfw -lvulkan -ldl -lpthread -lX11 -lXrandr
+IMGUI = imgui/imgui.cpp  imgui/imgui_demo.cpp imgui/imgui_widgets.cpp  imgui/imgui_impl_vulkan.cpp imgui/imgui_impl_vulkan.cpp
+IMGUI_H = imgui/imgui.h imgui/imgui_impl_glfw.h imgui/imgui_impl_vulkan.h
+VulkanTutorial: *.cpp *.hpp 
+	g++ $(CFLAGS) -o VulkanTutorial *.cpp  $(LDFLAGS)
+
+.PHONY: test clean
+
+test: VulkanTutorial
+	./compile.sh && ./VulkanTutorial
+
+clean:
+	rm -f VulkanTutorial
+
